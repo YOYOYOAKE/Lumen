@@ -2,6 +2,25 @@
 
 Lumen: A glimmer on edge nodes. An blog architecture, powered by Cloudflare, Hono and Vue.
 
+## 部署
+
+### 数据库与文件存储
+
+Lumen 使用 Cloudflare D1 SQL 数据库和 R2 对象存储保存数据和文件。
+
+创建并初始化 D1 SQL 数据库：
+
+```bash
+wrangler d1 create lumen-metadata
+wrangler d1 execute lumen-metadata --remote --file infra/d1/0001_init.sql
+```
+
+创建 R2 对象存储桶：
+
+```bash
+wrangler r2 bucket create lumen-content
+```
+
 ## Tech Stack
 
 - Frontend: Vue 3 + Vite + Tailwind CSS v4
@@ -11,7 +30,7 @@ Lumen: A glimmer on edge nodes. An blog architecture, powered by Cloudflare, Hon
 
 ## Prerequisites
 
-- Node.js >= 22.12.0
+- Node.js >= 24.13.1
 - pnpm >= 10
 
 ## Quick Start
@@ -28,7 +47,7 @@ pnpm dev
 
 - `pnpm dev`: run all apps in parallel
 - `pnpm dev:web`: run only frontend
-- `pnpm dev:api`: run only api
+- `pnpm dev:api`: run only api (remote mode)
 - `pnpm contract:validate`: validate OpenAPI contract
 - `pnpm lint`: lint workspace via OXC (`oxlint`)
 - `pnpm format`: format workspace via OXC (`oxfmt`)
@@ -39,6 +58,8 @@ pnpm dev
 ## Project Layout
 
 - `apps/web`: Vue frontend
-- `apps/api`: Hono API worker
+- `apps/api`: Hono API worker (default `wrangler dev --remote`)
+- `infra/d1`: D1 initialization files and config
+- `infra/r2/wrangler.toml`: R2 infrastructure config
 - `packages/api-contract`: OpenAPI contract source
 - `packages/shared`: shared constants/types
