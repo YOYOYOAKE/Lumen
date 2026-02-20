@@ -1,0 +1,16 @@
+node_modules
+.pnpm-store
+
+# build outputs
+dist
+coverage
+
+# env files
+.env
+.env.*
+!.env.example
+
+# tooling
+.DS_Store
+.vscode/*.code-workspace
+.wrangler

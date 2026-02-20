@@ -1,0 +1,24 @@
+{
+  "name": "lumen",
+  "private": true,
+  "version": "0.1.0",
+  "packageManager": "pnpm@10.6.0",
+  "engines": {
+    "node": ">=24.13.1"
+  },
+  "scripts": {
+    "dev": "pnpm -r --parallel dev",
+    "dev:web": "pnpm --filter @lumen/web dev",
+    "dev:api": "pnpm --filter @lumen/api dev",
+    "contract:validate": "pnpm --filter @lumen/api-contract validate",
+    "check": "pnpm contract:validate && pnpm lint && pnpm format && pnpm typecheck && pnpm build",
+    "build": "pnpm -r build",
+    "typecheck": "pnpm -r typecheck",
+    "lint": "pnpm -r lint",
+    "format": "pnpm -r format"
+  },
+  "devDependencies": {
+    "oxfmt": "^0.34.0",
+    "oxlint": "^1.49.0"
+  }
+}

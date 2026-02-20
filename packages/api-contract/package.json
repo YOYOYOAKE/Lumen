@@ -1,0 +1,12 @@
+{
+  "name": "@lumen/api-contract",
+  "private": true,
+  "version": "0.1.0",
+  "type": "module",
+  "scripts": {
+    "validate": "redocly lint openapi.yaml"
+  },
+  "devDependencies": {
+    "@redocly/cli": "^2.19.1"
+  }
+}

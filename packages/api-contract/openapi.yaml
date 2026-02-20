@@ -1,0 +1,717 @@
+openapi: 3.1.0
+info:
+  title: Lumen API
+  version: 1.0.0
+  license:
+    name: MIT
+    identifier: MIT
+  description: |
+    API contract for Lumen front-end/back-end decoupled architecture.
+    - API prefix: /api/v1
+    - Runtime target: Hono on Cloudflare Workers
+    - Storage target: D1 (metadata) + R2 (static assets/content payload)
+servers:
+  - url: https://api.your-domain.com/api/v1
+    description: Production
+  - url: https://api.lumen.local/api/v1
+    description: Local development
+security: []
+tags:
+  - name: site
+    description: Site-level configuration and navigation.
+  - name: home
+    description: Home page aggregated data.
+  - name: posts
+    description: Post list and post detail resources.
+  - name: jottings
+    description: Jotting list and jotting detail resources.
+  - name: docs
+    description: Docs index and docs detail resources.
+  - name: friends
+    description: Friends links resources.
+  - name: tags
+    description: Tag list and tag-filtered content resources.
+  - name: search
+    description: Metadata search resources.
+
+paths:
+  /site:
+    get:
+      tags: [site]
+      summary: Get site-level configuration and navigation data
+      operationId: getSite
+      responses:
+        '200':
+          description: OK
+          content:
+            application/json:
+              schema:
+                allOf:
+                  - $ref: '#/components/schemas/ApiResponse'
+                  - type: object
+                    properties:
+                      data:
+                        $ref: '#/components/schemas/SiteData'
+        '404':
+          $ref: '#/components/responses/NotFound'
+
+  /home:
+    get:
+      tags: [home]
+      summary: Get home page aggregate data
+      operationId: getHome
+      responses:
+        '200':
+          description: OK
+          content:
+            application/json:
+              schema:
+                allOf:
+                  - $ref: '#/components/schemas/ApiResponse'
+                  - type: object
+                    properties:
+                      data:
+                        $ref: '#/components/schemas/HomeData'
+        '404':
+          $ref: '#/components/responses/NotFound'
+
+  /posts:
+    get:
+      tags: [posts]
+      summary: Get paginated post list
+      operationId: listPosts
+      parameters:
+        - $ref: '#/components/parameters/Page'
+        - $ref: '#/components/parameters/PageSize'
+      responses:
+        '200':
+          description: OK
+          content:
+            application/json:
+              schema:
+                allOf:
+                  - $ref: '#/components/schemas/ApiResponse'
+                  - type: object
+                    properties:
+                      data:
+                        type: array
+                        items:
+                          $ref: '#/components/schemas/ArticleCard'
+                      meta:
+                        $ref: '#/components/schemas/PaginationMeta'
+        '404':
+          $ref: '#/components/responses/NotFound'
+
+  /posts/{slug}:
+    get:
+      tags: [posts]
+      summary: Get post detail
+      operationId: getPostDetail
+      parameters:
+        - $ref: '#/components/parameters/Slug'
+      responses:
+        '200':
+          description: OK
+          content:
+            application/json:
+              schema:
+                allOf:
+                  - $ref: '#/components/schemas/ApiResponse'
+                  - type: object
+                    properties:
+                      data:
+                        allOf:
+                          - $ref: '#/components/schemas/ArticleDetail'
+                          - type: object
+                            properties:
+                              collection:
+                                type: string
+                                enum: [posts]
+        '404':
+          $ref: '#/components/responses/NotFound'
+
+  /jottings:
+    get:
+      tags: [jottings]
+      summary: Get paginated jotting list
+      operationId: listJottings
+      parameters:
+        - $ref: '#/components/parameters/Page'
+        - $ref: '#/components/parameters/PageSize'
+      responses:
+        '200':
+          description: OK
+          content:
+            application/json:
+              schema:
+                allOf:
+                  - $ref: '#/components/schemas/ApiResponse'
+                  - type: object
+                    properties:
+                      data:
+                        type: array
+                        items:
+                          $ref: '#/components/schemas/ArticleCard'
+                      meta:
+                        $ref: '#/components/schemas/PaginationMeta'
+        '404':
+          $ref: '#/components/responses/NotFound'
+
+  /jottings/{slug}:
+    get:
+      tags: [jottings]
+      summary: Get jotting detail
+      operationId: getJottingDetail
+      parameters:
+        - $ref: '#/components/parameters/Slug'
+      responses:
+        '200':
+          description: OK
+          content:
+            application/json:
+              schema:
+                allOf:
+                  - $ref: '#/components/schemas/ApiResponse'
+                  - type: object
+                    properties:
+                      data:
+                        allOf:
+                          - $ref: '#/components/schemas/ArticleDetail'
+                          - type: object
+                            properties:
+                              collection:
+                                type: string
+                                enum: [jottings]
+        '404':
+          $ref: '#/components/responses/NotFound'
+
+  /docs:
+    get:
+      tags: [docs]
+      summary: Get docs index items
+      operationId: listDocsIndex
+      responses:
+        '200':
+          description: OK
+          content:
+            application/json:
+              schema:
+                allOf:
+                  - $ref: '#/components/schemas/ApiResponse'
+                  - type: object
+                    properties:
+                      data:
+                        type: array
+                        items:
+                          $ref: '#/components/schemas/DocsIndexItem'
+        '404':
+          $ref: '#/components/responses/NotFound'
+
+  /docs/{slug}:
+    get:
+      tags: [docs]
+      summary: Get doc detail by slug (e.g. go/20260113-ec05)
+      operationId: getDocDetail
+      parameters:
+        - $ref: '#/components/parameters/Slug'
+      responses:
+        '200':
+          description: OK
+          content:
+            application/json:
+              schema:
+                allOf:
+                  - $ref: '#/components/schemas/ApiResponse'
+                  - type: object
+                    properties:
+                      data:
+                        allOf:
+                          - $ref: '#/components/schemas/ArticleDetail'
+                          - type: object
+                            properties:
+                              collection:
+                                type: string
+                                enum: [docs]
+        '404':
+          $ref: '#/components/responses/NotFound'
+
+  /friends:
+    get:
+      tags: [friends]
+      summary: Get friends links list
+      operationId: listFriends
+      responses:
+        '200':
+          description: OK
+          content:
+            application/json:
+              schema:
+                allOf:
+                  - $ref: '#/components/schemas/ApiResponse'
+                  - type: object
+                    properties:
+                      data:
+                        type: array
+                        items:
+                          $ref: '#/components/schemas/FriendItem'
+        '404':
+          $ref: '#/components/responses/NotFound'
+
+  /tags:
+    get:
+      tags: [tags]
+      summary: Get tag list with counts
+      operationId: listTags
+      responses:
+        '200':
+          description: OK
+          content:
+            application/json:
+              schema:
+                allOf:
+                  - $ref: '#/components/schemas/ApiResponse'
+                  - type: object
+                    properties:
+                      data:
+                        type: array
+                        items:
+                          $ref: '#/components/schemas/TagItem'
+                      meta:
+                        type: object
+                        properties:
+                          postTotal:
+                            type: integer
+                            minimum: 0
+        '404':
+          $ref: '#/components/responses/NotFound'
+
+  /tags/{tag}/posts:
+    get:
+      tags: [tags]
+      summary: Get paginated posts by tag
+      operationId: listPostsByTag
+      parameters:
+        - $ref: '#/components/parameters/Tag'
+        - $ref: '#/components/parameters/Page'
+        - $ref: '#/components/parameters/PageSize'
+      responses:
+        '200':
+          description: OK
+          content:
+            application/json:
+              schema:
+                allOf:
+                  - $ref: '#/components/schemas/ApiResponse'
+                  - type: object
+                    properties:
+                      data:
+                        type: array
+                        items:
+                          $ref: '#/components/schemas/ArticleCard'
+                      meta:
+                        allOf:
+                          - $ref: '#/components/schemas/PaginationMeta'
+                          - type: object
+                            properties:
+                              tag:
+                                type: string
+        '404':
+          $ref: '#/components/responses/NotFound'
+
+  /search:
+    get:
+      tags: [search]
+      summary: Metadata search (title/tag/description)
+      operationId: searchMetadata
+      parameters:
+        - name: q
+          in: query
+          required: true
+          description: Search keyword
+          schema:
+            type: string
+            minLength: 1
+            maxLength: 100
+        - name: type
+          in: query
+          required: false
+          schema:
+            type: string
+            enum: [all, posts, jottings, docs]
+            default: all
+        - name: field
+          in: query
+          required: false
+          schema:
+            type: string
+            enum: [all, title, tag, description]
+            default: all
+        - $ref: '#/components/parameters/Page'
+        - $ref: '#/components/parameters/PageSize'
+      responses:
+        '200':
+          description: OK
+          content:
+            application/json:
+              schema:
+                allOf:
+                  - $ref: '#/components/schemas/ApiResponse'
+                  - type: object
+                    properties:
+                      data:
+                        type: array
+                        items:
+                          $ref: '#/components/schemas/SearchResultItem'
+                      meta:
+                        allOf:
+                          - $ref: '#/components/schemas/PaginationMeta'
+                          - type: object
+                            properties:
+                              q:
+                                type: string
+                              type:
+                                type: string
+                              field:
+                                type: string
+        '404':
+          $ref: '#/components/responses/NotFound'
+
+components:
+  parameters:
+    Page:
+      name: page
+      in: query
+      required: false
+      schema:
+        type: integer
+        minimum: 1
+        default: 1
+    PageSize:
+      name: pageSize
+      in: query
+      required: false
+      schema:
+        type: integer
+        minimum: 1
+        maximum: 50
+        default: 10
+    Slug:
+      name: slug
+      in: path
+      required: true
+      schema:
+        type: string
+      description: Content slug. Can include nested path for docs (e.g. go/20260113-ec05).
+    Tag:
+      name: tag
+      in: path
+      required: true
+      schema:
+        type: string
+
+  responses:
+    NotFound:
+      description: Resource not found
+      content:
+        application/json:
+          schema:
+            $ref: '#/components/schemas/ErrorResponse'
+
+  schemas:
+    ApiResponse:
+      type: object
+      required: [code, message]
+      properties:
+        code:
+          type: integer
+          enum: [0]
+        message:
+          type: string
+          example: ok
+        data:
+          oneOf:
+            - type: object
+            - type: 'null'
+        meta:
+          oneOf:
+            - type: object
+            - type: 'null'
+
+    PaginationMeta:
+      type: object
+      required: [page, pageSize, total]
+      properties:
+        page:
+          type: integer
+          minimum: 1
+        pageSize:
+          type: integer
+          minimum: 1
+        total:
+          type: integer
+          minimum: 0
+
+    ErrorResponse:
+      type: object
+      required: [code, message, requestId]
+      properties:
+        code:
+          type: integer
+          example: 40401
+        message:
+          type: string
+          example: not found
+        requestId:
+          type: string
+
+    SiteData:
+      type: object
+      required: [site, navigator]
+      properties:
+        site:
+          type: object
+          required: [title, slogan, author, website, lang, base, avatarSrc]
+          properties:
+            title: { type: string }
+            slogan: { type: string }
+            author: { type: string }
+            website: { type: string, format: uri }
+            lang: { type: string, example: zh-cn }
+            base: { type: string, example: / }
+            avatarSrc: { type: string }
+        navigator:
+          type: object
+          required: [headerNaviLinks, footerNaviLinks]
+          properties:
+            headerNaviLinks:
+              type: array
+              items:
+                $ref: '#/components/schemas/NaviLink'
+            footerNaviLinks:
+              type: array
+              items:
+                $ref: '#/components/schemas/NaviLink'
+
+    HomeData:
+      type: object
+      required: [intro, social, skillsCard, recentPosts]
+      properties:
+        intro:
+          type: object
+          required: [title, subtitle, paragraphs]
+          properties:
+            title: { type: string }
+            subtitle: { type: string }
+            paragraphs:
+              type: array
+              items: { type: string }
+        social:
+          type: array
+          items:
+            $ref: '#/components/schemas/SocialLink'
+        skillsCard:
+          type: object
+          required: [enabled, title, description, rows]
+          properties:
+            enabled: { type: boolean }
+            title: { type: string }
+            description: { type: string }
+            rows:
+              type: array
+              items:
+                $ref: '#/components/schemas/SkillRow'
+        recentPosts:
+          type: object
+          required: [title, subtitle, items]
+          properties:
+            title: { type: string }
+            subtitle: { type: string }
+            items:
+              type: array
+              items:
+                $ref: '#/components/schemas/ArticleCard'
+
+    NaviLink:
+      type: object
+      required: [name, url]
+      properties:
+        name: { type: string }
+        url: { type: string }
+
+    SocialLink:
+      type: object
+      required: [name, icon, url]
+      properties:
+        name: { type: string }
+        icon: { type: string }
+        url: { type: string }
+        count:
+          oneOf:
+            - type: integer
+            - type: 'null'
+
+    SkillRow:
+      type: object
+      required: [direction, items]
+      properties:
+        direction:
+          type: string
+          enum: [left, right]
+        items:
+          type: array
+          items:
+            $ref: '#/components/schemas/SkillItem'
+
+    SkillItem:
+      type: object
+      required: [name, icon]
+      properties:
+        name: { type: string }
+        icon: { type: string }
+        url:
+          oneOf:
+            - type: string
+            - type: 'null'
+
+    ArticleCard:
+      type: object
+      required: [id, slug, title, description, createTime, completed, top, tags, collection]
+      properties:
+        id:
+          type: string
+          description: Internal ID
+        slug:
+          type: string
+          description: Public route slug
+        collection:
+          type: string
+          enum: [posts, jottings, docs]
+        title:
+          type: string
+        description:
+          type: string
+        createTime:
+          type: string
+          format: date-time
+        lastEditedTime:
+          oneOf:
+            - type: string
+              format: date-time
+            - type: 'null'
+        completed:
+          type: boolean
+        top:
+          type: boolean
+        tags:
+          type: array
+          items:
+            type: string
+
+    ArticleDetail:
+      type: object
+      required: [meta, content, headings, prev, next]
+      properties:
+        meta:
+          allOf:
+            - $ref: '#/components/schemas/ArticleCard'
+            - type: object
+              properties:
+                words:
+                  oneOf:
+                    - type: integer
+                      minimum: 0
+                    - type: 'null'
+        content:
+          type: object
+          description: Content payload from storage/compile pipeline
+          required: [format, body]
+          properties:
+            format:
+              type: string
+              enum: [html, markdown]
+            body:
+              type: string
+        headings:
+          type: array
+          items:
+            $ref: '#/components/schemas/HeadingItem'
+        prev:
+          oneOf:
+            - $ref: '#/components/schemas/AdjacentItem'
+            - type: 'null'
+        next:
+          oneOf:
+            - $ref: '#/components/schemas/AdjacentItem'
+            - type: 'null'
+
+    HeadingItem:
+      type: object
+      required: [depth, slug, text]
+      properties:
+        depth:
+          type: integer
+          minimum: 1
+          maximum: 6
+        slug:
+          type: string
+        text:
+          type: string
+
+    AdjacentItem:
+      type: object
+      required: [slug, title]
+      properties:
+        slug:
+          type: string
+        title:
+          type: string
+
+    DocsIndexItem:
+      type: object
+      required: [name, description, url]
+      properties:
+        name: { type: string }
+        description: { type: string }
+        url: { type: string }
+        icon:
+          oneOf:
+            - type: string
+            - type: 'null'
+
+    FriendItem:
+      type: object
+      required: [name, description, website, icon]
+      properties:
+        name: { type: string }
+        description: { type: string }
+        website: { type: string }
+        icon: { type: string }
+
+    TagItem:
+      type: object
+      required: [name, count]
+      properties:
+        name: { type: string }
+        count:
+          type: integer
+          minimum: 0
+
+    SearchResultItem:
+      type: object
+      required: [collection, slug, title, description, tags, score]
+      properties:
+        collection:
+          type: string
+          enum: [posts, jottings, docs]
+        slug:
+          type: string
+        title:
+          type: string
+        description:
+          type: string
+        tags:
+          type: array
+          items: { type: string }
+        score:
+          type: number
+          format: float
