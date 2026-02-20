@@ -14,3 +14,6 @@ coverage
 .DS_Store
 .vscode/*.code-workspace
 .wrangler
+
+# config files
+apps/api/wrangler.toml

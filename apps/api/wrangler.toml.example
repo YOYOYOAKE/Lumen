@@ -8,7 +8,7 @@ enabled = true
 [[d1_databases]]
 binding = "LUMEN_METADATA"
 database_name = "lumen-metadata"
-database_id = "D1_DATABASE_ID"
+database_id = "<LUMEN_METADATA_DATABASE_ID>"
 
 [[r2_buckets]]
 binding = "LUMEN_CONTENT"

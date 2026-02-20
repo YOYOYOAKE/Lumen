@@ -21,6 +21,29 @@ wrangler d1 execute lumen-metadata --remote --file infra/d1/0001_init.sql
 wrangler r2 bucket create lumen-content
 ```
 
+### API
+
+Lumen 使用 Cloudflare Workers 作为 API。
+
+使用下列命令获取到 D1 SQL 数据库的 ID：
+
+```bash
+wrangler d1 list
+```
+
+将数据库 ID 写入 `wrangler.toml` 并部署：
+
+```bash
+export LUMEN_METADATA_DATABASE_ID="<LUMEN_METADATA_DATABASE_ID>"
+
+cd apps/api
+
+cp wrangler.toml.example wrangler.toml
+sed -i "s/^database_id = \".*\"/database_id = \"$LUMEN_METADATA_DATABASE_ID\"/" wrangler.toml
+
+wrangler deploy
+```
+
 ## Tech Stack
 
 - Frontend: Vue 3 + Vite + Tailwind CSS v4
