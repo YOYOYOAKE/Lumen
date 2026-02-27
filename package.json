@@ -3,11 +3,13 @@
   "version": "1.0.0",
   "private": true,
   "license": "MIT",
+  "packageManager": "pnpm@10.11.1",
   "engines": {
     "node": ">=24 <25"
   },
   "type": "module",
   "scripts": {
+    "preinstall": "node -e \"const ua=process.env.npm_config_user_agent||'';if(!ua.startsWith('pnpm/')){console.error('This project requires pnpm. Please run: pnpm install');process.exit(1)}\"",
     "dev": "vite",
     "build": "vite-ssg build",
     "preview": "vite preview",
