@@ -1,0 +1,38 @@
+<script setup lang="ts">
+import { useHead } from '@unhead/vue'
+
+useHead({ title: '404 Not Found' })
+</script>
+
+<template>
+  <div class="px-6 sm:px-8 py-4 sm:py-6 lg:py-8 fade-up">
+    <div class="global-layout-width mx-auto flex flex-col items-center justify-center min-h-[60vh]">
+      <div
+        class="w-full max-w-lg bg-primary/3 dark:bg-primary/8 border border-primary/10 p-6 font-mono text-sm"
+      >
+        <div class="flex items-center gap-2 mb-4 text-primary/40">
+          <span class="icon-[ph--terminal] size-4" />
+          <span>terminal</span>
+        </div>
+        <div class="space-y-2 text-primary/70">
+          <p>
+            <span class="text-primary/40">$</span>
+            <span class="ml-2">curl -I {{ $route.fullPath }}</span>
+          </p>
+          <p class="text-red-500/80">HTTP/1.1 404 Not Found</p>
+          <p class="text-primary/50">The requested resource could not be found.</p>
+          <p class="mt-4">
+            <span class="text-primary/40">$</span>
+            <span class="ml-2 text-primary/60">
+              Redirecting to
+              <router-link to="/" class="text-primary hover:underline underline-offset-4">
+                home
+              </router-link>
+              …
+            </span>
+          </p>
+        </div>
+      </div>
+    </div>
+  </div>
+</template>

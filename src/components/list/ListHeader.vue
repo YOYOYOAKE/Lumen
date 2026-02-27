@@ -1,0 +1,19 @@
+<script setup lang="ts">
+defineProps<{
+  title: string
+  description: string
+}>()
+</script>
+
+<template>
+  <div>
+    <h1
+      class="tracking-tight text-4xl sm:text-5xl bg-gradient-to-r from-primary to-primary/70 bg-clip-text text-transparent pb-1.5"
+    >
+      {{ title }}
+    </h1>
+    <div class="pro text-muted-foreground">
+      <p class="mt-2">{{ description }}</p>
+    </div>
+  </div>
+</template>

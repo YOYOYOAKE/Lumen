@@ -1,0 +1,17 @@
+{
+  "$schema": "./node_modules/oxfmt/configuration_schema.json",
+  "singleQuote": true,
+  "jsxSingleQuote": true,
+  "semi": false,
+  "tabWidth": 2,
+  "useTabs": false,
+  "ignorePatterns": ["dist/**", "node_modules/**", "**/*.md"],
+  "overrides": [
+    {
+      "files": ["*.vue"],
+      "options": {
+        "embeddedLanguageFormatting": "auto"
+      }
+    }
+  ]
+}
