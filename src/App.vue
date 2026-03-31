@@ -1,10 +1,14 @@
 <script setup lang="ts">
+import { computed, ref, watch } from 'vue'
 import { useHead } from '@unhead/vue'
-import type { RouteLocationNormalizedLoaded } from 'vue-router'
+import { useRoute } from 'vue-router'
 import { siteConfig } from '~/config'
+import ArticleSceneShell from '~/components/article/ArticleSceneShell.vue'
+import StandardSceneShell from '~/components/standard/StandardSceneShell.vue'
 import AppHeader from '~/components/layout/AppHeader.vue'
 import AppFooter from '~/components/layout/AppFooter.vue'
 import AppDivider from '~/components/common/AppDivider.vue'
+import { resolveAppSceneTransitionProps, type SceneKind } from '~/lib/transitions'
 
 useHead({
   titleTemplate: (title) => (title ? `${title} | ${siteConfig.title}` : siteConfig.title),
@@ -38,25 +42,46 @@ useHead({
   ],
 })
 
-function getRouteTransitionKey(route: RouteLocationNormalizedLoaded): string {
+const route = useRoute()
+
+const currentScene = computed<SceneKind>(() => {
+  if (route.meta.scene === 'article') return 'article'
+  if (route.meta.scene === 'standard') return 'standard'
+  return 'plain'
+})
+
+const sceneSeries = computed(() => {
   const seriesParam = route.params.series
-  const series = Array.isArray(seriesParam)
-    ? String(seriesParam[0] ?? '')
-    : String(seriesParam ?? '')
-  const hasArticleSlug = route.params.slug !== undefined
+  return Array.isArray(seriesParam) ? String(seriesParam[0] ?? '') : String(seriesParam ?? '')
+})
 
-  // Keep article page mounted when only article slug changes in the same series.
-  if (hasArticleSlug && series) return `article:${series}`
+const previousScene = ref<SceneKind>(currentScene.value)
+const lastScene = ref<SceneKind>(currentScene.value)
+
+watch(
+  () => route.path,
+  () => {
+    previousScene.value = lastScene.value
+    lastScene.value = currentScene.value
+  },
+  { flush: 'sync' },
+)
+
+const sceneTransitionKey = computed(() => {
+  if (currentScene.value === 'article' && sceneSeries.value) {
+    return `article:${sceneSeries.value}`
+  }
+
+  if (currentScene.value === 'standard') {
+    return 'standard'
+  }
+
   return route.path
-}
+})
 
-function getNamedViewTransitionKey(
-  route: RouteLocationNormalizedLoaded,
-  viewName: 'left' | 'default' | 'right',
-): string {
-  const baseKey = getRouteTransitionKey(route)
-  return `${viewName}:${baseKey}`
-}
+const appSceneTransitionProps = computed(() =>
+  resolveAppSceneTransitionProps(currentScene.value, previousScene.value),
+)
 </script>
 
 <template>
@@ -65,48 +90,24 @@ function getNamedViewTransitionKey(
     <AppDivider />
     <div class="grow flex">
       <main class="relative border-x border-border/50 global-layout-width mx-auto grow min-w-0">
-        <router-view name="left" v-slot="{ Component, route }">
-          <component
-            :is="Component"
-            v-if="Component"
-            :key="getNamedViewTransitionKey(route, 'left')"
+        <transition v-bind="appSceneTransitionProps">
+          <ArticleSceneShell
+            v-if="currentScene === 'article'"
+            :key="sceneTransitionKey"
+            :route="route"
           />
-        </router-view>
-
-        <router-view v-slot="{ Component, route }">
-          <transition name="fade" mode="out-in">
-            <component
-              :is="Component"
-              v-if="Component"
-              :key="getNamedViewTransitionKey(route, 'default')"
-            />
-          </transition>
-        </router-view>
-
-        <router-view name="right" v-slot="{ Component, route }">
-          <transition name="fade" mode="out-in">
-            <component
-              :is="Component"
-              v-if="Component"
-              :key="getNamedViewTransitionKey(route, 'right')"
-            />
-          </transition>
-        </router-view>
+          <StandardSceneShell
+            v-else-if="currentScene === 'standard'"
+            :key="sceneTransitionKey"
+            :route="route"
+          />
+          <div v-else :key="sceneTransitionKey">
+            <router-view :route="route" />
+          </div>
+        </transition>
       </main>
     </div>
     <AppDivider />
     <AppFooter />
   </div>
 </template>
-
-<style>
-.fade-enter-active,
-.fade-leave-active {
-  transition: opacity 0.2s ease;
-}
-
-.fade-enter-from,
-.fade-leave-to {
-  opacity: 0;
-}
-</style>

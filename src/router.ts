@@ -1,15 +1,19 @@
 import type { RouteLocationNormalized, RouteRecordRaw } from 'vue-router'
 
-import HomePage from '~/pages/functional/HomePage.vue'
-import FriendsPage from '~/pages/functional/FriendsPage.vue'
-import TagsPage from '~/pages/functional/TagsPage.vue'
 import NotFoundPage from '~/pages/functional/NotFoundPage.vue'
-import SeriesListPage from '~/pages/content/SeriesListPage.vue'
-import SeriesPage from '~/pages/content/SeriesPage.vue'
 import ArticleLeftView from '~/pages/content/article/ArticleLeftView.vue'
 import ArticleMainView from '~/pages/content/article/ArticleMainView.vue'
 import ArticleRightView from '~/pages/content/article/ArticleRightView.vue'
+import HomeHeaderView from '~/pages/standard/HomeHeaderView.vue'
+import HomeBodyView from '~/pages/standard/HomeBodyView.vue'
+import StaticListHeaderView from '~/pages/standard/StaticListHeaderView.vue'
+import SeriesListBodyView from '~/pages/standard/SeriesListBodyView.vue'
+import FriendsBodyView from '~/pages/standard/FriendsBodyView.vue'
+import TagsBodyView from '~/pages/standard/TagsBodyView.vue'
+import SeriesPageHeaderView from '~/pages/standard/SeriesPageHeaderView.vue'
+import SeriesPageBodyView from '~/pages/standard/SeriesPageBodyView.vue'
 import { getTagNameBySlug } from '~/lib/content'
+import { pagesConfig } from '~/config'
 import { articles, seriesMetadata } from 'virtual:content'
 
 const docSeriesPattern = (() => {
@@ -21,8 +25,15 @@ const docSeriesPattern = (() => {
 const articleLookup = new Set(articles.map((article) => `${article.series}:${article.slug}`))
 const seriesIndexRoutes: RouteRecordRaw[] = seriesMetadata.map((item) => ({
   path: `/${item.directory}`,
-  component: SeriesPage,
-  props: { kind: 'series', series: item.directory },
+  components: {
+    header: SeriesPageHeaderView,
+    body: SeriesPageBodyView,
+  },
+  meta: { scene: 'standard' },
+  props: {
+    header: { kind: 'series', series: item.directory },
+    body: { kind: 'series', series: item.directory },
+  },
 }))
 
 function toParamString(value: unknown): string {
@@ -42,18 +53,71 @@ function ensureTagExists(to: RouteLocationNormalized): true | string {
 }
 
 export const routes: RouteRecordRaw[] = [
-  { path: '/', component: HomePage },
+  {
+    path: '/',
+    components: {
+      header: HomeHeaderView,
+      body: HomeBodyView,
+    },
+    meta: { scene: 'standard' },
+  },
 
-  { path: '/series', component: SeriesListPage },
-  { path: '/friends', component: FriendsPage },
-  { path: '/404', component: NotFoundPage },
+  {
+    path: '/series',
+    components: {
+      header: StaticListHeaderView,
+      body: SeriesListBodyView,
+    },
+    meta: { scene: 'standard' },
+    props: {
+      header: {
+        title: 'Series',
+        description: '知识就是培根。',
+      },
+    },
+  },
+  {
+    path: '/friends',
+    components: {
+      header: StaticListHeaderView,
+      body: FriendsBodyView,
+    },
+    meta: { scene: 'standard' },
+    props: {
+      header: {
+        title: pagesConfig.friends.title,
+        description: pagesConfig.friends.description,
+      },
+    },
+  },
+  { path: '/404', component: NotFoundPage, meta: { scene: 'plain' } },
 
-  { path: '/tags', component: TagsPage },
+  {
+    path: '/tags',
+    components: {
+      header: StaticListHeaderView,
+      body: TagsBodyView,
+    },
+    meta: { scene: 'standard' },
+    props: {
+      header: {
+        title: pagesConfig.tags.title,
+        description: pagesConfig.tags.description,
+      },
+    },
+  },
   {
     path: '/tags/:tagSlug([a-z0-9-]+)',
-    component: SeriesPage,
+    components: {
+      header: SeriesPageHeaderView,
+      body: SeriesPageBodyView,
+    },
+    meta: { scene: 'standard' },
     beforeEnter: ensureTagExists,
-    props: (route) => ({ kind: 'tag', tagSlug: toParamString(route.params.tagSlug) }),
+    props: {
+      header: (route) => ({ kind: 'tag', tagSlug: toParamString(route.params.tagSlug) }),
+      body: (route) => ({ kind: 'tag', tagSlug: toParamString(route.params.tagSlug) }),
+    },
   },
 
   ...seriesIndexRoutes,
@@ -65,6 +129,7 @@ export const routes: RouteRecordRaw[] = [
       default: ArticleMainView,
       right: ArticleRightView,
     },
+    meta: { scene: 'article' },
     beforeEnter: ensureDocExists,
   },
 

@@ -4,7 +4,7 @@ const tocSkeletonWidths = ['66%', '74%', '54%', '70%', '48%', '62%']
 
 <template>
   <div
-    class="hidden xl:block fixed top-30 right-[calc(50%-var(--layout-half-width))] translate-x-full w-[clamp(12rem,18vw,18rem)] fade-up"
+    class="hidden xl:block fixed top-30 right-[calc(50%-var(--layout-half-width))] translate-x-full w-[clamp(12rem,18vw,18rem)]"
     aria-busy="true"
   >
     <span class="sr-only" role="status" aria-live="polite">Loading article outline</span>

@@ -45,36 +45,3 @@ function duplicate(items: SkillItem[]): SkillItem[] {
     </div>
   </div>
 </template>
-
-<style>
-@keyframes scroll {
-  0% {
-    transform: translate3d(0, 0, 0);
-  }
-
-  100% {
-    transform: translate3d(-25%, 0, 0);
-  }
-}
-
-@keyframes scroll-reverse {
-  0% {
-    transform: translate3d(-25%, 0, 0);
-  }
-
-  100% {
-    transform: translate3d(0, 0, 0);
-  }
-}
-
-.safari-only {
-  transform-style: preserve-3d;
-}
-
-.safari-item {
-  transform: translate3d(0, 0, 0);
-  backface-visibility: hidden;
-  contain: layout style paint;
-  will-change: transform;
-}
-</style>

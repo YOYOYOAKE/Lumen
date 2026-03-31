@@ -95,9 +95,7 @@ const groupedSections = computed<TocNavSection[]>(() => {
 </script>
 
 <template>
-  <div
-    class="hidden xl:block fixed top-30 left-[calc(50%-var(--layout-half-width))] -translate-x-full w-[clamp(12rem,18vw,18rem)] fade-up"
-  >
+  <div class="relative">
     <nav class="p-4">
       <TocHead title="Series" icon-class="icon-[ph--folder-notch-open] w-4 h-4 opacity-85" />
       <div class="relative h-[calc(100vh-24rem)] overflow-y-auto no-scrollbar pr-1">

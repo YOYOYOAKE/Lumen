@@ -8,7 +8,7 @@ const codeSkeletonWidths = ['82%', '88%', '65%', '91%', '72%']
   <div class="relative flex flex-col justify-between h-fit z-[1]" aria-busy="true">
     <span class="sr-only" role="status" aria-live="polite">Loading article</span>
 
-    <article class="relative fade-up">
+    <article class="relative">
       <div class="px-6 sm:px-8 py-4 sm:py-6 lg:py-8">
         <div class="global-layout-width mx-auto">
           <header>
@@ -93,7 +93,7 @@ const codeSkeletonWidths = ['82%', '88%', '65%', '91%', '72%']
       </div>
     </article>
 
-    <div class="px-6 sm:px-8 pb-6 sm:pb-8 fade-up">
+    <div class="px-6 sm:px-8 pb-6 sm:pb-8">
       <nav class="flex flex-col sm:flex-row justify-between gap-6 pt-2 border-t border-border/50">
         <div class="flex-1 space-y-2">
           <div class="h-2.5 rounded-full skeleton-shimmer" style="width: 4rem" />

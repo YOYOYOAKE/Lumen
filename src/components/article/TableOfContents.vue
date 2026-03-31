@@ -95,7 +95,7 @@ watch(activeId, async () => {
 <template>
   <div
     v-if="filteredHeadings.length > 0"
-    class="hidden xl:block fixed top-30 right-[calc(50%-var(--layout-half-width))] translate-x-full w-[clamp(12rem,18vw,18rem)] fade-up"
+    class="relative"
   >
     <nav class="p-4">
       <TocHead />

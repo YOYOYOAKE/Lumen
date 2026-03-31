@@ -6,6 +6,7 @@ import ArticleMeta from '~/components/article/ArticleMeta.vue'
 import ArticleNav from '~/components/article/ArticleNav.vue'
 import BackToTop from '~/components/common/BackToTop.vue'
 import { useArticleRouteState } from '~/composables/useArticleRouteState'
+import { articleContentTransitionProps } from '~/lib/transitions'
 
 const {
   articleTransitionKey,
@@ -33,10 +34,10 @@ useHead(() => ({
 
 <template>
   <div class="relative flex flex-col justify-between h-fit z-[1]">
-    <transition name="fade" mode="out-in">
-      <div :key="articleTransitionKey">
+    <transition v-bind="articleContentTransitionProps">
+      <div :key="articleTransitionKey" class="article-content-pane">
         <template v-if="doc">
-          <article class="relative fade-up">
+          <article class="relative">
             <div class="px-6 sm:px-8 py-4 sm:py-6 lg:py-8">
               <div class="global-layout-width mx-auto">
                 <ArticleMeta :frontmatter="doc.frontmatter" />

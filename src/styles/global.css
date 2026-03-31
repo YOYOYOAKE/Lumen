@@ -74,6 +74,12 @@
     --layout-half-width: calc(var(--layout-width) / 2);
     --layout-change-width: 136rem;
     --sidebar-width: clamp(12rem, 18vw, 18rem);
+    --duration-scene-fade: 240ms;
+    --duration-standard-content: 240ms;
+    --duration-article-scene-enter: 240ms;
+    --duration-article-scene-leave: 240ms;
+    --duration-article-content-leave: 240ms;
+    --duration-article-content-enter: 240ms;
   }
 
   @media (min-width: 136rem) {
@@ -173,6 +179,24 @@
     }
   }
 
+  @keyframes scroll {
+    from {
+      transform: translate3d(0, 0, 0);
+    }
+    to {
+      transform: translate3d(-25%, 0, 0);
+    }
+  }
+
+  @keyframes scroll-reverse {
+    from {
+      transform: translate3d(-25%, 0, 0);
+    }
+    to {
+      transform: translate3d(0, 0, 0);
+    }
+  }
+
   .animation-delay-100 {
     animation-delay: 100ms;
   }
@@ -210,6 +234,17 @@
       animation: none;
       background-position: 50% 0;
     }
+  }
+
+  .safari-only {
+    transform-style: preserve-3d;
+  }
+
+  .safari-item {
+    transform: translate3d(0, 0, 0);
+    backface-visibility: hidden;
+    contain: layout style paint;
+    will-change: transform;
   }
 
   /* 主题切换动画 */
@@ -289,4 +324,116 @@
 
 .animate-slide-down {
   animation: slide-down 0.3s ease-out forwards;
+}
+
+.scene-fade-enter-active,
+.scene-fade-leave-active {
+  transition: opacity var(--duration-scene-fade) ease-out;
+}
+
+.scene-fade-enter-from,
+.scene-fade-leave-to {
+  opacity: 0;
+}
+
+.scene-fade-enter-to,
+.scene-fade-leave-from {
+  opacity: 1;
+}
+
+.standard-content-enter-active.standard-content-pane,
+.standard-content-enter-active .standard-content-pane,
+.standard-content-leave-active.standard-content-pane,
+.standard-content-leave-active .standard-content-pane {
+  transition: opacity var(--duration-standard-content) ease-out;
+  will-change: opacity;
+}
+
+.standard-content-enter-from.standard-content-pane,
+.standard-content-enter-from .standard-content-pane,
+.standard-content-leave-to.standard-content-pane,
+.standard-content-leave-to .standard-content-pane {
+  opacity: 0;
+}
+
+.standard-content-enter-to.standard-content-pane,
+.standard-content-enter-to .standard-content-pane,
+.standard-content-leave-from.standard-content-pane,
+.standard-content-leave-from .standard-content-pane {
+  opacity: 1;
+}
+
+.article-scene-pane {
+  --scene-pane-x: 0px;
+  transform: translate3d(var(--scene-pane-x), 0, 0);
+}
+
+.article-scene-pane-left {
+  --scene-pane-x: -100%;
+}
+
+.article-scene-pane-right {
+  --scene-pane-x: 100%;
+}
+
+.article-scene-enter-active .article-scene-pane {
+  transition:
+    opacity var(--duration-article-scene-enter) ease-out,
+    transform var(--duration-article-scene-enter) ease-out;
+  will-change: opacity, transform;
+}
+
+.article-scene-enter-from .article-scene-pane {
+  opacity: 0;
+  transform: translate3d(var(--scene-pane-x), 14px, 0);
+}
+
+.article-scene-enter-to .article-scene-pane,
+.article-scene-leave-from .article-scene-pane {
+  opacity: 1;
+  transform: translate3d(var(--scene-pane-x), 0, 0);
+}
+
+.article-scene-leave-active .article-scene-pane {
+  transition: opacity var(--duration-article-scene-leave) ease-out;
+  will-change: opacity;
+}
+
+.article-scene-leave-to .article-scene-pane {
+  opacity: 0;
+  transform: translate3d(var(--scene-pane-x), 0, 0);
+}
+
+.article-content-enter-active.article-content-pane,
+.article-content-enter-active .article-content-pane {
+  transition:
+    opacity var(--duration-article-content-enter) ease-out,
+    transform var(--duration-article-content-enter) ease-out;
+  will-change: opacity, transform;
+}
+
+.article-content-enter-from.article-content-pane,
+.article-content-enter-from .article-content-pane {
+  opacity: 0;
+  transform: translateY(12px);
+}
+
+.article-content-enter-to.article-content-pane,
+.article-content-enter-to .article-content-pane,
+.article-content-leave-from.article-content-pane,
+.article-content-leave-from .article-content-pane {
+  opacity: 1;
+  transform: translateY(0);
+}
+
+.article-content-leave-active.article-content-pane,
+.article-content-leave-active .article-content-pane {
+  transition: opacity var(--duration-article-content-leave) ease-out;
+  will-change: opacity;
+}
+
+.article-content-leave-to.article-content-pane,
+.article-content-leave-to .article-content-pane {
+  opacity: 0;
+  transform: translateY(0);
 }

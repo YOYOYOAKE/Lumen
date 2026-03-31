@@ -7,7 +7,7 @@ defineProps<{
 </script>
 
 <template>
-  <div class="px-6 sm:px-8 pb-6 sm:pb-8 fade-up">
+  <div class="px-6 sm:px-8 pb-6 sm:pb-8">
     <nav class="flex flex-col sm:flex-row justify-between gap-6 pt-2 border-t border-border/50">
       <!-- Previous -->
       <div class="flex-1">

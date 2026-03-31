@@ -21,52 +21,19 @@ function onToggle(event: MouseEvent) {
 <template>
   <button
     type="button"
-    class="theme-toggle inline-flex items-center justify-center text-foreground cursor-pointer hover:scale-105 size-6 origin-center relative"
+    class="inline-flex items-center justify-center text-foreground cursor-pointer hover:scale-105 size-6 origin-center relative"
     aria-label="Toggle theme"
     @click="onToggle"
   >
     <span
-      class="theme-icon theme-icon-sun icon-[tabler--sun-filled]"
-      :class="isDark ? 'is-hidden' : 'is-visible'"
+      class="icon-[tabler--sun-filled] absolute left-1/2 top-1/2 size-6 -translate-x-1/2 -translate-y-1/2 transition-[transform,opacity] duration-[420ms] ease-in-out"
+      :class="isDark ? 'opacity-0 rotate-180 scale-[0.6]' : 'opacity-100 rotate-0 scale-100'"
       aria-hidden="true"
     />
     <span
-      class="theme-icon theme-icon-moon icon-[tabler--moon-filled]"
-      :class="isDark ? 'is-visible' : 'is-hidden'"
+      class="icon-[tabler--moon-filled] absolute left-1/2 top-1/2 size-6 -translate-x-1/2 -translate-y-1/2 transition-[transform,opacity] duration-[420ms] ease-in-out"
+      :class="isDark ? 'opacity-100 rotate-0 scale-100' : 'opacity-0 -rotate-180 scale-[0.6]'"
       aria-hidden="true"
     />
   </button>
 </template>
-
-<style scoped>
-.theme-icon {
-  position: absolute;
-  left: 50%;
-  top: 50%;
-  width: 1.5rem;
-  height: 1.5rem;
-  transition:
-    transform 420ms ease-in-out,
-    opacity 420ms ease-in-out;
-}
-
-.theme-icon-sun.is-visible {
-  opacity: 1;
-  transform: translate(-50%, -50%) rotate(0deg) scale(1);
-}
-
-.theme-icon-sun.is-hidden {
-  opacity: 0;
-  transform: translate(-50%, -50%) rotate(180deg) scale(0.6);
-}
-
-.theme-icon-moon.is-visible {
-  opacity: 1;
-  transform: translate(-50%, -50%) rotate(0deg) scale(1);
-}
-
-.theme-icon-moon.is-hidden {
-  opacity: 0;
-  transform: translate(-50%, -50%) rotate(-180deg) scale(0.6);
-}
-</style>
