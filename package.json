@@ -14,16 +14,11 @@
     "build": "vite-ssg build",
     "preview": "vite preview",
     "typecheck": "vue-tsc --noEmit",
-    "test": "vitest run",
-    "test:watch": "vitest",
-    "check": "pnpm typecheck && pnpm lint && pnpm test && pnpm build",
+    "check": "pnpm typecheck && pnpm lint && pnpm build",
     "lint": "oxlint . --vue-plugin --import-plugin --tsconfig tsconfig.json",
     "lint:fix": "oxlint . --vue-plugin --import-plugin --tsconfig tsconfig.json --fix",
     "format": "oxfmt .",
-    "format:check": "oxfmt . --check",
-    "format:md": "markdownlint-cli2 --fix \"content/**/*.md\"",
-    "format:md:check": "markdownlint-cli2 \"content/**/*.md\"",
-    "postbuild": "pagefind --site dist"
+    "format:check": "oxfmt . --check"
   },
   "dependencies": {
     "@unhead/vue": "^2.0.0",
@@ -44,12 +39,9 @@
     "fast-glob": "^3.3.3",
     "gray-matter": "^4.0.3",
     "katex": "^0.16.22",
-    "markdownlint": "^0.40.0",
-    "markdownlint-cli2": "^0.21.0",
     "mdast-util-to-string": "^4.0.0",
     "oxfmt": "^0.35.0",
     "oxlint": "^1.50.0",
-    "pagefind": "^1.3.0",
     "reading-time": "^1.5.0",
     "rehype-callouts": "^2.0.2",
     "rehype-external-links": "^3.0.0",
@@ -73,7 +65,6 @@
     "unist-util-visit": "^5.0.0",
     "vite": "^6.2.0",
     "vite-ssg": "^0.24.0",
-    "vitest": "^3.2.4",
     "vue-tsc": "^2.2.0"
   }
 }

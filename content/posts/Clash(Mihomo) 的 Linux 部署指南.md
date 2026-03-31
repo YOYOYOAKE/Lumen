@@ -1,12 +1,13 @@
 ---
-title: 'Clash(Mihomo) 的 Linux 部署指南'
-slug: '20260215-e184'
-description: '本方案通过 Docker 部署 Clash(Mihomo)，并使用 Cloudflare Tunnel 实现安全管理。'
-createdAt: '2026-02-15 12:00'
-updatedAt: '2026-02-15 15:32'
+title: Clash(Mihomo) 的 Linux 部署指南
+description: 本方案通过 Docker 部署 Clash(Mihomo)，并使用 Cloudflare Tunnel 实现安全管理。
+createdAt: 2026-02-15
+updatedAt: 2026-02-15
 completed: true
 top: false
-tags: ['Ubuntu/Debian', 'Docker']
+tags: 
+  - Ubuntu/Debian
+  - Docker
 ---
 
 ## Clash(Mihomo) 内核配置与订阅管理

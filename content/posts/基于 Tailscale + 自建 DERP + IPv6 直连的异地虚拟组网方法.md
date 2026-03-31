@@ -1,14 +1,14 @@
 ---
-title: '基于 Tailscale + 自建 DERP + IPv6 直连的异地虚拟组网方法'
-slug: '20260126-0f56'
-description:
-  '通常情况下的远程访问需要自建或购买商业内网穿透服务。本文方法基于 Tailscale 组网，并使用 IPv6
-  直连加速，使握手延迟降低到 30ms，文件传输速度达到 160Mbps。'
-createdAt: '2026-01-26 12:00'
-updatedAt: '2026-01-26 12:20'
+title: 基于 Tailscale + 自建 DERP + IPv6 直连的异地虚拟组网方法
+slug: 20260126-0f56
+description: 通常情况下的远程访问需要自建或购买商业内网穿透服务。本文方法基于 Tailscale 组网，并使用 IPv6
+  直连加速，使握手延迟降低到 30ms，文件传输速度达到 160Mbps。
+createdAt: 2026-01-26
+updatedAt: 2026-01-26
 completed: true
 top: false
-tags: ['Ubuntu/Debian']
+tags: 
+  - Ubuntu/Debian
 ---
 
 ## 技术选型

@@ -18,7 +18,6 @@ const filteredHeadings = computed<TocDisplayItem[]>(() => {
   return props.headings
     .filter((h) => h.depth <= 4 && h.text.trim() && h.slug !== 'footnote-label')
     .map((h) => {
-      // Clean up heading text only; numbering is generated in TocMenu
       const cleaned = h.text.replace(/\s*[Hh][1-6]$/g, '').trim()
       return {
         ...h,
@@ -47,7 +46,6 @@ const sections = computed<TocNavSection[]>(() => {
         levelOne: {
           id: heading.slug,
           text: heading.text,
-          displayOrder: '',
           linkType: 'anchor',
           link: `#${heading.slug}`,
           trackingId: heading.slug,
@@ -61,7 +59,6 @@ const sections = computed<TocNavSection[]>(() => {
     current.levelTwoItems.push({
       id: heading.slug,
       text: heading.text,
-      displayOrder: '',
       indentClass: getIndent(heading.depth),
       linkType: 'anchor',
       link: `#${heading.slug}`,
@@ -111,8 +108,6 @@ watch(activeId, async () => {
           <TocMenu
             :sections="sections"
             :active-id="activeId"
-            collapsed-active-mode="map-to-level-one"
-            :strip-leading-order="true"
           />
         </ul>
       </div>

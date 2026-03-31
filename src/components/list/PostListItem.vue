@@ -33,7 +33,7 @@ const recommendBadge =
             :datetime="parseDateInput(post.frontmatter.createdAt).toISOString()"
             class="text-xs sm:text-sm"
           >
-            {{ formatDate(post.frontmatter.createdAt) }}
+            {{ formatDate(post.frontmatter.createdAt, 'iso') }}
           </time>
         </span>
       </div>

@@ -1,14 +1,12 @@
 ---
-title: 'VSCode Remote SSH 复用本地代理'
-slug: '20260119-f6bf'
-description:
-  '很多情况下内网服务器无法直连外网，导致安装依赖或使用 AI 助手受阻。本文介绍一种通过 SSH Remote
-  Forward 复用本地代理的完美方案。'
-createdAt: '2026-01-19 12:00'
-updatedAt: '2026-01-19 11:37'
+title: VSCode Remote SSH 复用本地代理
+description: 很多情况下内网服务器无法直连外网，导致安装依赖或使用 AI 助手受阻。本文介绍一种通过 SSH Remote Forward 复用本地代理的完美方案。
+createdAt: 2026-01-19
+updatedAt: 2026-01-19
 completed: true
 top: false
-tags: ['Ubuntu/Debian']
+tags: 
+  - Ubuntu/Debian
 ---
 
 本方案利用 SSH 的 Remote
@@ -25,7 +23,8 @@ Host 10.212.160.162
     RemoteForward 47890 127.0.0.1:7890
 ```
 
-> [!tip] 配置说明该指令将远程服务器的 `47890` 端口映射到本地（本机）的 `7890` 端口。
+> [!tip] 配置说明
+> 该指令将远程服务器的 `47890` 端口映射到本地（本机）的 `7890` 端口。
 
 ## 配置 Shell 代理
 
@@ -40,7 +39,8 @@ export all_proxy="http://127.0.0.1:47890"
 此时 Shell 的网络流量已通过代理转发。执行命令 `curl -I https://www.google.com`，若返回
 `HTTP/1.1 200 OK` 则说明配置成功。
 
-> [!tip] 使代理永久生效若希望代理永久生效，请将上述命令追加到 `~/.bashrc` 或 `~/.zshrc` 文件末尾。
+> [!tip] 使代理永久生效
+> 若希望代理永久生效，请将上述命令追加到 `~/.bashrc` 或 `~/.zshrc` 文件末尾。
 
 ## 配置 VSCode 代理
 

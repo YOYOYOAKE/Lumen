@@ -33,19 +33,7 @@ const linkProps = computed(() =>
       <span
         :class="
           cn(
-            'font-mono flex items-center px-2 text-xs min-w-[2.25rem]',
-            props.activeId === props.item.id
-              ? 'text-primary'
-              : 'text-primary/50 group-hover:text-primary',
-          )
-        "
-      >
-        {{ props.item.displayOrder }}
-      </span>
-      <span
-        :class="
-          cn(
-            'leading-[1.75rem] truncate pr-2',
+            'leading-[1.75rem] truncate px-2',
             props.activeId === props.item.id ? 'text-primary' : 'group-hover:text-primary',
           )
         "

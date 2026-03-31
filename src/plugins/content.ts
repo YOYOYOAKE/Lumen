@@ -10,7 +10,8 @@ import type { HmrContext, Plugin } from 'vite'
 import { existsSync, readFileSync, readdirSync, realpathSync, statSync } from 'node:fs'
 import { join, normalize, relative } from 'node:path'
 import matter from 'gray-matter'
-import { canonicalizeFrontmatterDateTime, parseFrontmatterDateTime } from '../lib/frontmatter-date.js'
+import { canonicalizeFrontmatterDate, parseFrontmatterDate } from '../lib/frontmatter-date.js'
+import { compareLocalizedText } from '../lib/utils.js'
 import type { ProcessedMarkdown } from '../lib/markdown.js'
 import type { ResolvedArticleBody, ResolvedArticleMeta } from '../types/content.js'
 import { seriesConfig } from '../config/series.js'
@@ -41,7 +42,6 @@ const SERIES_ITEM_KEYS = new Set([
 ])
 const RESERVED_SERIES_DIRS = new Set(['series', 'tags', 'friends', '404'])
 const ARTICLE_FRONTMATTER_KEYS = new Set([
-  'slug',
   'title',
   'description',
   'createdAt',
@@ -52,7 +52,6 @@ const ARTICLE_FRONTMATTER_KEYS = new Set([
 ])
 
 interface ParsedArticleFrontmatter {
-  slug: string
   title: string
   description: string
   createdAt: string
@@ -100,24 +99,39 @@ function toVirtualArticleId(lookupKey: string): string {
   return `${ARTICLE_MODULE_PREFIX}${encodeURIComponent(lookupKey)}`
 }
 
-function assertFrontmatterDateTime(
+function hashText(text: string): string {
+  let hash = 0x811c9dc5
+  for (const char of text) {
+    hash ^= char.codePointAt(0) ?? 0
+    hash = Math.imul(hash, 0x01000193) >>> 0
+  }
+  return hash.toString(16).padStart(8, '0')
+}
+
+function buildArticleSlug(createdAt: string, title: string): string {
+  const date = createdAt.slice(0, 10).replaceAll('-', '')
+  const hash = hashText(title.trim()).slice(-8)
+  return `${date}-${hash}`
+}
+
+function assertFrontmatterDate(
   input: unknown,
   filePath: string,
   field: 'createdAt' | 'updatedAt',
 ): string | undefined {
   if (input === undefined || input === null) return undefined
 
-  if (typeof input !== 'string') {
+  if (!(input instanceof Date)) {
     throw new Error(
-      `Invalid frontmatter "${field}" in ${filePath}: expected a quoted datetime string like "2026-02-15 12:00"`,
+      `Invalid frontmatter "${field}" in ${filePath}: expected an unquoted YAML date like ${field}: 2025-12-21`,
     )
   }
 
   try {
-    return canonicalizeFrontmatterDateTime(input.trim())
+    return canonicalizeFrontmatterDate(input)
   } catch {
     throw new Error(
-      `Invalid frontmatter "${field}" in ${filePath}: expected "YYYY-MM-DD HH:mm"`,
+      `Invalid frontmatter "${field}" in ${filePath}: expected an unquoted YAML date like ${field}: 2025-12-21`,
     )
   }
 }
@@ -306,20 +320,6 @@ function parseArticleFrontmatter(
     throw new Error(`Invalid frontmatter in ${filePath}`)
   }
 
-  const unknown = Object.keys(input).filter((k) => !ARTICLE_FRONTMATTER_KEYS.has(k))
-  if (unknown.length > 0) {
-    throw new Error(`Unknown article frontmatter keys in ${filePath}: ${unknown.join(', ')}`)
-  }
-
-  const slugInput = input.slug
-  if (typeof slugInput !== 'string' || slugInput.trim() === '') {
-    throw new Error(`Invalid or missing frontmatter "slug" in ${filePath}`)
-  }
-  const slug = slugInput.trim()
-  if (slug.includes('/') || slug.includes('\\')) {
-    throw new Error(`Invalid frontmatter "slug" in ${filePath}: "/" is not allowed`)
-  }
-
   const title = input.title
   if (typeof title !== 'string' || title.trim() === '') {
     throw new Error(`Invalid or missing frontmatter "title" in ${filePath}`)
@@ -330,7 +330,7 @@ function parseArticleFrontmatter(
     throw new Error(`Invalid or missing frontmatter "description" in ${filePath}`)
   }
 
-  const createdAt = assertFrontmatterDateTime(input.createdAt, filePath, 'createdAt')
+  const createdAt = assertFrontmatterDate(input.createdAt, filePath, 'createdAt')
   if (!createdAt) {
     throw new Error(`Invalid or missing frontmatter "createdAt" in ${filePath}`)
   }
@@ -338,7 +338,7 @@ function parseArticleFrontmatter(
   const updatedAtValue = input.updatedAt
   let updatedAt: string | undefined
   if (updatedAtValue !== undefined) {
-    updatedAt = assertFrontmatterDateTime(updatedAtValue, filePath, 'updatedAt')
+    updatedAt = assertFrontmatterDate(updatedAtValue, filePath, 'updatedAt')
     if (!updatedAt) {
       throw new Error(`Invalid frontmatter "updatedAt" in ${filePath}`)
     }
@@ -380,7 +380,6 @@ function parseArticleFrontmatter(
   }
 
   return {
-    slug,
     title,
     description,
     createdAt,
@@ -403,10 +402,11 @@ async function processEntry(
   if (!frontmatter) return null
 
   const result = await processMarkdown(content, filePath)
-  const lookupKey = toLookupKey(seriesConfig.directory, frontmatter.slug)
+  const slug = buildArticleSlug(frontmatter.createdAt, frontmatter.title)
+  const lookupKey = toLookupKey(seriesConfig.directory, slug)
 
   const meta: ResolvedArticleMeta = {
-    slug: frontmatter.slug,
+    slug,
     subSeries,
     series: seriesConfig.directory,
     frontmatter: {
@@ -494,10 +494,16 @@ async function buildContentPayload(contentDir: string): Promise<BuiltContentPayl
   articles.sort((a, b) => {
     const topDiff = Number(Boolean(b.frontmatter.top)) - Number(Boolean(a.frontmatter.top))
     if (topDiff !== 0) return topDiff
-    return (
-      parseFrontmatterDateTime(b.frontmatter.createdAt).getTime() -
-      parseFrontmatterDateTime(a.frontmatter.createdAt).getTime()
-    )
+
+    const timeDiff =
+      parseFrontmatterDate(b.frontmatter.createdAt).getTime() -
+      parseFrontmatterDate(a.frontmatter.createdAt).getTime()
+    if (timeDiff !== 0) return timeDiff
+
+    const titleDiff = compareLocalizedText(a.frontmatter.title, b.frontmatter.title)
+    if (titleDiff !== 0) return titleDiff
+
+    return compareLocalizedText(a.slug, b.slug)
   })
 
   return {

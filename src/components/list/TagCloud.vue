@@ -11,11 +11,11 @@ defineProps<{
     <div class="mt-6 flex items-center gap-6 text-sm text-muted-foreground">
       <span class="flex items-center gap-1.5">
         <span class="icon-[ph--hash] size-4" />
-        {{ tags.length }} tags total
+        {{ tags.length }} Tags
       </span>
       <span class="flex items-center gap-1.5">
         <span class="icon-[ph--article] size-4" />
-        {{ totalPosts }} posts total
+        {{ totalPosts }} Posts
       </span>
     </div>
 

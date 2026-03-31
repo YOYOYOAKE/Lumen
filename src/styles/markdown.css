@@ -76,18 +76,6 @@
     scroll-margin-top: 6rem;
   }
 
-  & .heading-order {
-    display: inline-flex;
-    align-items: baseline;
-    margin-inline-end: 0.55rem;
-    color: var(--color-text-muted);
-    font-family: var(--font-geist-mono);
-    font-size: 0.82em;
-    font-weight: 500;
-    letter-spacing: 0.01em;
-    user-select: none;
-  }
-
   & h1 {
     font-size: clamp(1.75em, 4vw, 2em);
     margin-block: 0 1em;
@@ -281,8 +269,8 @@
   /* 代码块 */
   & pre {
     overflow-x: auto;
-    font-size: 0.9375em;
-    line-height: 1.7142857;
+    font-size: 0.9em;
+    line-height: 1.4;
     margin-block: 1.7142857em;
     border-radius: 0;
     padding: 0.8571429em 1.1428571em;
@@ -319,13 +307,23 @@
 }
 
 .code-block-header {
+  --code-block-header-padding-x: 1.1428571em;
+  --code-block-copy-size: 1rem;
+  --code-block-copy-gap: 0.35rem;
+  --code-block-copy-optical-offset: -0.35rem;
   display: flex;
   align-items: center;
+  position: relative;
   padding-block: 0.4em;
-  padding-inline: 1.1428571em;
+  padding-inline:
+    var(--code-block-header-padding-x)
+    calc(
+      var(--code-block-header-padding-x) + var(--code-block-copy-size) +
+        var(--code-block-copy-gap)
+    );
   font-family: var(--font-geist-mono);
-  font-size: 0.8125em;
-  line-height: 1.5;
+  font-size: 0.8em;
+  line-height: 1.4;
   color: light-dark(#6c6f85, #939ab7);
   background-color: light-dark(#e6e9ef, #1e2030);
   border-block-end: 1px solid light-dark(#e6e9ef, #24273a);
@@ -334,6 +332,80 @@
 
 .code-block-lang {
   opacity: 0.85;
+}
+
+.code-block-copy {
+  position: absolute;
+  inset-inline-end: calc(
+    var(--code-block-header-padding-x) + var(--code-block-copy-optical-offset)
+  );
+  inset-block-start: 50%;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  inline-size: var(--code-block-copy-size);
+  block-size: var(--code-block-copy-size);
+  transform: translateY(-50%);
+  border: 0;
+  padding: 0;
+  color: inherit;
+  background: transparent;
+  cursor: pointer;
+  opacity: 0.72;
+  transition:
+    opacity var(--transition-fast),
+    color var(--transition-fast);
+
+  &:focus-visible {
+    outline: 2px solid light-dark(#7287fd, #8aadf4);
+    outline-offset: 2px;
+    opacity: 1;
+  }
+
+  &[data-state='copied'] {
+    opacity: 1;
+    color: light-dark(#4c4f69, #fff);
+  }
+
+  &[data-state='error'] {
+    opacity: 1;
+    color: light-dark(#d20f39, #ed8796);
+  }
+}
+
+.code-block-copy-icon {
+  position: absolute;
+  inset: 0;
+  display: inline-flex;
+  inline-size: 1rem;
+  block-size: 1rem;
+  align-items: center;
+  justify-content: center;
+  opacity: 1;
+  transform: scale(1);
+  transition:
+    opacity 160ms ease,
+    transform 160ms ease;
+
+  & > svg {
+    inline-size: 100%;
+    block-size: 100%;
+  }
+}
+
+.code-block-copy-icon-check {
+  opacity: 0;
+  transform: scale(0.72);
+}
+
+.code-block-copy[data-state='copied'] .code-block-copy-icon-clipboard {
+  opacity: 0;
+  transform: scale(0.72);
+}
+
+.code-block-copy[data-state='copied'] .code-block-copy-icon-check {
+  opacity: 1;
+  transform: scale(1);
 }
 
 /* ===== Shiki 代码高亮 ===== */

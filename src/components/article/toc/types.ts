@@ -3,7 +3,6 @@ export type TocNavLinkType = 'anchor' | 'route'
 export interface TocNavItem {
   id: string
   text: string
-  displayOrder: string
   linkType: TocNavLinkType
   link: string
   indentClass?: string

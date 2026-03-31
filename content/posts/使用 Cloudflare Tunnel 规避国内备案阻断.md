@@ -1,12 +1,12 @@
 ---
-title: '使用 Cloudflare Tunnel 规避国内备案阻断'
-slug: '20260123-2edc'
-description: '未备案的域名无法在国内访问，但是有一种巧妙的方法绕过。'
-createdAt: '2026-01-23 12:00'
-updatedAt: '2026-01-23 10:41'
+title: 使用 Cloudflare Tunnel 规避国内备案阻断
+description: 未备案的域名无法在国内访问，但是有一种巧妙的方法绕过。
+createdAt: 2026-01-23
+updatedAt: 2026-01-23
 completed: true
 top: false
-tags: ['Ubuntu/Debian']
+tags: 
+  - Ubuntu/Debian
 ---
 
 如果直接使用 Cloudflare 的 DNS 把未备案的域名解析到国内服务器，会报 403 错误。但是备案流程很繁琐，因此才有了这个教程。
@@ -43,12 +43,14 @@ sudo dpkg -i cloudflared-linux-amd64.deb
 
     记下输出的 **Tunnel ID**。
 
-3. **配置 DNS 解析（CNAME）：** 将域名流量指向该隧道：
+3. **配置 DNS 解析（CNAME）：**
 
-        ```bash
-        cloudflared tunnel route dns aliyun-tunnel api.yoake.cc
-        cloudflared tunnel route dns aliyun-tunnel list.yoake.cc
-        ```
+    将域名流量指向该隧道：
+
+    ```bash
+    cloudflared tunnel route dns aliyun-tunnel api.yoake.cc
+    cloudflared tunnel route dns aliyun-tunnel list.yoake.cc
+    ```
 
 ## 迁移凭证
 

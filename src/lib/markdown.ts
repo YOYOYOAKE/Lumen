@@ -34,6 +34,10 @@ const LEGACY_CALLOUT_REPLACEMENTS: Record<string, string> = {
 const CALLOUT_MARKER_REGEX = /^\s*>\s*\[!(?<type>\w+)](?:[+-])?/i
 const DANGER_CALLOUT_ICON =
   '<svg xmlns="http://www.w3.org/2000/svg" width="1em" height="1em" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M12 16h.01M12 8v4m3.312-10a2 2 0 0 1 1.414.586l4.688 4.688A2 2 0 0 1 22 8.688v6.624a2 2 0 0 1-.586 1.414l-4.688 4.688a2 2 0 0 1-1.414.586H8.688a2 2 0 0 1-1.414-.586l-4.688-4.688A2 2 0 0 1 2 15.312V8.688a2 2 0 0 1 .586-1.414l4.688-4.688A2 2 0 0 1 8.688 2z"/></svg>'
+const CODE_BLOCK_COPY_ICON =
+  '<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 256 256" fill="currentColor"><path d="M184,32H72A16,16,0,0,0,56,48V64H48A16,16,0,0,0,32,80V200a16,16,0,0,0,16,16H160a16,16,0,0,0,16-16v-16h8a16,16,0,0,0,16-16V48A16,16,0,0,0,184,32ZM160,200H48V80H160V200Zm24-32H176V80a16,16,0,0,0-16-16H72V48H184V168Z"/></svg>'
+const CODE_BLOCK_COPIED_ICON =
+  '<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 256 256" fill="currentColor"><path d="M229.66,90.34a8,8,0,0,1,0,11.32l-96,96a8,8,0,0,1-11.32,0l-48-48a8,8,0,0,1,11.32-11.32L128,180.69l90.34-90.35A8,8,0,0,1,229.66,90.34Z"/></svg>'
 
 const sanitizeSchema = {
   ...defaultSchema,
@@ -50,6 +54,24 @@ function escapeHtml(input: string): string {
     .replaceAll('>', '&gt;')
     .replaceAll('"', '&quot;')
     .replaceAll("'", '&#39;')
+}
+
+function buildCodeBlockHeader(label: string): string {
+  const copyButtonHtml =
+    `<button class="code-block-copy" type="button" aria-label="Copy code" title="Copy code">` +
+    `<span class="code-block-copy-icon code-block-copy-icon-clipboard" aria-hidden="true">${CODE_BLOCK_COPY_ICON}</span>` +
+    `<span class="code-block-copy-icon code-block-copy-icon-check" aria-hidden="true">${CODE_BLOCK_COPIED_ICON}</span>` +
+    '</button>'
+
+  return `<div class="code-block-header"><span class="code-block-lang">${label}</span>${copyButtonHtml}</div>`
+}
+
+function buildPlainTextCodeBlock(codeText: string, label: string): string {
+  const escapedCode = escapeHtml(codeText)
+  const escapedLabel = escapeHtml(label)
+  const headerHtml = buildCodeBlockHeader(escapedLabel)
+
+  return `<figure class="code-block">${headerHtml}<pre><code>${escapedCode}</code></pre></figure>`
 }
 
 function assertSupportedCallouts(content: string, source: string): void {
@@ -84,6 +106,7 @@ function getHighlighter(): Promise<Highlighter> {
         'markdown',
         'bash',
         'shell',
+        'powershell',
         'python',
         'go',
         'sql',
@@ -134,6 +157,8 @@ const LANG_DISPLAY: Record<string, string> = {
   bash: 'Bash',
   shell: 'Shell',
   sh: 'Shell',
+  powershell: 'PowerShell',
+  ps1: 'PowerShell',
   python: 'Python',
   py: 'Python',
   go: 'Go',
@@ -188,15 +213,18 @@ function rehypeShiki() {
 
         // Build the frame header
         const displayLang = LANG_DISPLAY[lang] ?? lang
-        const headerLabel = escapeHtml(title || displayLang)
-        const headerHtml = `<div class="code-block-header"><span class="code-block-lang">${headerLabel}</span></div>`
+        const headerHtml = buildCodeBlockHeader(escapeHtml(title || displayLang))
 
         node.type = 'raw'
         node.value = `<figure class="code-block">${headerHtml}${shikiHtml}</figure>`
         node.children = []
         node.tagName = undefined
       } catch {
-        // If language not supported, leave as-is
+        const displayLang = LANG_DISPLAY[lang] ?? lang
+        node.type = 'raw'
+        node.value = buildPlainTextCodeBlock(codeText, title || displayLang)
+        node.children = []
+        node.tagName = undefined
       }
     }
   }
@@ -226,56 +254,6 @@ function rehypeExtractHeadings(headings: TocHeading[]) {
         headings.push({ depth, slug, text })
       }
     })
-  }
-}
-
-/** Add auto-number prefix to headings based on relative depth */
-function rehypeNumberHeadings() {
-  return (tree: any) => {
-    const headingNodes: Array<{ node: any; depth: number }> = []
-
-    visit(tree, 'element', (node: any) => {
-      const match = node.tagName?.match(/^h([1-6])$/)
-      if (!match) return
-      if (node.properties?.id === 'footnote-label') return
-      headingNodes.push({ node, depth: parseInt(match[1], 10) })
-    })
-
-    if (headingNodes.length === 0) return
-
-    const uniqueDepths = Array.from(new Set(headingNodes.map((item) => item.depth))).sort(
-      (a, b) => a - b,
-    )
-    const depthToLevel = new Map<number, number>(
-      uniqueDepths.map((depth, index) => [depth, index + 1]),
-    )
-    const counters = new Array(uniqueDepths.length).fill(0)
-
-    for (const { node, depth } of headingNodes) {
-      const level = depthToLevel.get(depth)
-      if (!level) continue
-
-      counters[level - 1] += 1
-      for (let i = level; i < counters.length; i += 1) {
-        counters[i] = 0
-      }
-
-      const order = counters.slice(0, level).join('.')
-      const children = Array.isArray(node.children) ? node.children : []
-
-      node.children = [
-        {
-          type: 'element',
-          tagName: 'span',
-          properties: {
-            className: ['heading-order'],
-            ariaHidden: 'true',
-          },
-          children: [{ type: 'text', value: order }],
-        },
-        ...children,
-      ]
-    }
   }
 }
 
@@ -335,7 +313,6 @@ export async function processMarkdown(
     .use(rehypeKatex)
     .use(rehypeShiki)
     .use(rehypeExtractHeadings(headings))
-    .use(rehypeNumberHeadings)
     .use(rehypeStringify, { allowDangerousHtml: true })
     .process(content)
 

@@ -1,7 +1,6 @@
 <script setup lang="ts">
 import HeaderNav from './HeaderNav.vue'
 import ThemeToggle from './ThemeToggle.vue'
-import SearchModal from '~/components/common/SearchModal.vue'
 import { navigationConfig } from '~/config'
 import { siteConfig } from '~/config'
 
@@ -47,7 +46,6 @@ const avatar = siteConfig.avatar
 
       <!-- Button Group -->
       <div class="order-2 ml-auto flex items-center flex-shrink-0 gap-2">
-        <SearchModal />
         <ThemeToggle />
       </div>
     </div>

@@ -4,7 +4,6 @@
 
 /** Base frontmatter shared by all article-like content */
 export interface ArticleFrontmatter {
-  slug: string
   title: string
   description: string
   createdAt: string

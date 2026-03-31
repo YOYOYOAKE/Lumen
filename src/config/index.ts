@@ -18,14 +18,12 @@ export const navigationConfig: NavigationConfig = {
   header: [
     { label: 'Home', href: '/' },
     { label: 'Posts', href: '/posts' },
-    { label: 'Jottings', href: '/jottings' },
-    { label: 'Series', href: '/series' },
     { label: 'Friends', href: '/friends' },
+    { label: 'Tags', href: '/tags' },
   ],
   footer: [
+    { label: 'Home', href: '/' },
     { label: 'Posts', href: '/posts' },
-    { label: 'Jottings', href: '/jottings' },
-    { label: 'Series', href: '/series' },
     { label: 'Friends', href: '/friends' },
     { label: 'Tags', href: '/tags' },
   ],

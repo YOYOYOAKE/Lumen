@@ -1,6 +1,6 @@
 <script setup lang="ts">
 import { getTagSlug } from '~/lib/content'
-import { cn, formatDateTime, parseDateInput } from '~/lib/utils'
+import { cn, formatDate, parseDateInput } from '~/lib/utils'
 
 defineProps<{
   frontmatter: Record<string, any>
@@ -24,7 +24,7 @@ const badgeSize = 'text-xs px-2 py-0.5 gap-1'
       </p>
 
       <!-- Title -->
-      <div class="text-xl lg:text-2xl font-semibold leading-tight" data-pagefind-body>
+      <div class="text-xl lg:text-2xl font-semibold leading-tight">
         {{ frontmatter.title }}
       </div>
 
@@ -36,13 +36,13 @@ const badgeSize = 'text-xs px-2 py-0.5 gap-1'
         <div v-if="frontmatter.createdAt" class="flex items-center gap-1.5">
           <span class="icon-[ph--calendar-blank] w-4 h-4 opacity-85" />
           <time :datetime="parseDateInput(frontmatter.createdAt).toISOString()">
-            {{ formatDateTime(frontmatter.createdAt) }}
+            {{ formatDate(frontmatter.createdAt, 'iso') }}
           </time>
         </div>
         <div v-if="frontmatter.updatedAt" class="flex items-center gap-1.5">
           <span class="icon-[ph--pencil-simple] w-4 h-4 opacity-85" />
           <time :datetime="parseDateInput(frontmatter.updatedAt).toISOString()">
-            {{ formatDateTime(frontmatter.updatedAt) }}
+            {{ formatDate(frontmatter.updatedAt, 'iso') }}
           </time>
         </div>
         <div v-if="frontmatter.words !== undefined" class="flex items-center gap-1.5">

@@ -1,12 +1,12 @@
 ---
-title: '基于 Notion + Github Action + Astro + Cloudflare 的全云端博客工作流'
-slug: '20251222-71d5'
-description: '这使用该工作流完成的首篇文章。'
-createdAt: '2025-12-22 12:00'
-updatedAt: '2026-01-03 15:32'
+title: 基于 Notion + Github Action + Astro + Cloudflare 的全云端博客工作流
+description: 这使用该工作流完成的首篇文章。
+createdAt: 2025-12-22
+updatedAt: 2026-01-03
 completed: true
 top: false
-tags: ['Litos(YOAKE Modified)']
+tags: 
+  - Litos(YOAKE Modified)
 ---
 
 我一直使用静态页面生成器来创建我的博客。但是这种方式在形式上和撰写代码没什么太大的区别，因为这两者都需要坐在电脑前、打开 VSCode 或者别的什么 IDE后才能编写文章，写完后还要推送到 Github 仓库，然后等待 CI/CD 流程自动部署。

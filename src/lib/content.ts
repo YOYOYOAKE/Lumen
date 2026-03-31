@@ -13,7 +13,7 @@ import type {
   SeriesInfo,
 } from '~/types/content'
 import type { SeriesItemConfig } from '~/types/config'
-import { parseDateInput } from './utils'
+import { compareLocalizedText, parseDateInput } from './utils'
 
 const articleMetaList = articles as ResolvedArticleMeta[]
 const articleMetaByLookup = new Map<string, ResolvedArticleMeta>(
@@ -79,16 +79,10 @@ export function getArticlesBySeries(series: string): ResolvedArticleMeta[] {
   if (!order) return list
 
   const compareTitle = (a: ResolvedArticleMeta, b: ResolvedArticleMeta) =>
-    a.frontmatter.title.localeCompare(b.frontmatter.title, 'zh-CN', {
-      numeric: true,
-      sensitivity: 'base',
-    })
+    compareLocalizedText(a.frontmatter.title, b.frontmatter.title)
 
   const compareFilename = (a: ResolvedArticleMeta, b: ResolvedArticleMeta) =>
-    a.slug.localeCompare(b.slug, 'zh-CN', {
-      numeric: true,
-      sensitivity: 'base',
-    })
+    compareLocalizedText(a.slug, b.slug)
 
   const compareTime = (a: ResolvedArticleMeta, b: ResolvedArticleMeta) =>
     parseDateInput(a.frontmatter.createdAt).getTime() -
@@ -102,7 +96,13 @@ export function getArticlesBySeries(series: string): ResolvedArticleMeta[] {
     return compareFilename(a, b)
   }
 
-  const compareTimeDesc = (a: ResolvedArticleMeta, b: ResolvedArticleMeta) => -compareTimeAsc(a, b)
+  const compareTimeDesc = (a: ResolvedArticleMeta, b: ResolvedArticleMeta) => {
+    const timeDiff = compareTime(b, a)
+    if (timeDiff !== 0) return timeDiff
+    const titleDiff = compareTitle(a, b)
+    if (titleDiff !== 0) return titleDiff
+    return compareFilename(a, b)
+  }
 
   const compareFilenameAsc = (a: ResolvedArticleMeta, b: ResolvedArticleMeta) => {
     const filenameDiff = compareFilename(a, b)
@@ -172,17 +172,19 @@ export function getRecentPosts(count: number): ResolvedArticleMeta[] {
     parseDateInput(b.frontmatter.createdAt).getTime() -
     parseDateInput(a.frontmatter.createdAt).getTime()
 
-  const compareFilenameDesc = (a: ResolvedArticleMeta, b: ResolvedArticleMeta) =>
-    b.slug.localeCompare(a.slug, 'zh-CN', {
-      numeric: true,
-      sensitivity: 'base',
-    })
+  const compareTitleAsc = (a: ResolvedArticleMeta, b: ResolvedArticleMeta) =>
+    compareLocalizedText(a.frontmatter.title, b.frontmatter.title)
+
+  const compareFilenameAsc = (a: ResolvedArticleMeta, b: ResolvedArticleMeta) =>
+    compareLocalizedText(a.slug, b.slug)
 
   return [...getAllPosts()]
     .sort((a, b) => {
       const timeDiff = compareTimeDesc(a, b)
       if (timeDiff !== 0) return timeDiff
-      return compareFilenameDesc(a, b)
+      const titleDiff = compareTitleAsc(a, b)
+      if (titleDiff !== 0) return titleDiff
+      return compareFilenameAsc(a, b)
     })
     .slice(0, count)
 }

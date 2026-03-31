@@ -1,12 +1,12 @@
 ---
-title: 'Lumen 主题文档'
-slug: '20251221-bb5c'
-description: '基于当前仓库实现的内容规范与写作语法说明。'
-createdAt: '2025-12-21 12:00'
-updatedAt: '2026-02-27 23:15'
+title: Lumen 主题文档
+description: 基于当前仓库实现的内容规范与写作语法说明。
+createdAt: 2025-12-21
+updatedAt: 2026-02-27
 completed: true
 top: true
-tags: ['Lumen']
+tags: 
+  - Lumen
 ---
 
 ## 配置与内容组织

@@ -1,6 +1,6 @@
 import { clsx, type ClassValue } from 'clsx'
 import { twMerge } from 'tailwind-merge'
-import { parseFrontmatterDateTime } from './frontmatter-date'
+import { parseFrontmatterDate } from './frontmatter-date'
 
 /** Merge Tailwind CSS class names, deduplicating conflicting utilities */
 export function cn(...classes: ClassValue[]): string {
@@ -24,11 +24,19 @@ const MONTH_NAMES_LONG = [
   'December',
 ]
 
-/** Parse frontmatter date string in stable "YYYY-MM-DD HH:mm" form */
+/** Parse a frontmatter date in stable "YYYY-MM-DD" form */
 export function parseDateInput(date: Date | string): Date {
   if (date instanceof Date) return date
 
-  return parseFrontmatterDateTime(date.trim())
+  return parseFrontmatterDate(date.trim())
+}
+
+/** Compare titles/slugs using locale-aware ordering that works for letters and Chinese pinyin */
+export function compareLocalizedText(a: string, b: string): number {
+  return a.localeCompare(b, 'zh-CN', {
+    numeric: true,
+    sensitivity: 'base',
+  })
 }
 
 function getDateParts(date: Date) {
@@ -63,16 +71,9 @@ export function formatDate(date: Date | string, format: DateFormat = 'default'):
   }
 }
 
-/** Format a date/time string as "YYYY-MM-DD HH:mm" */
-export function formatDateTime(date: Date | string): string {
-  const d = parseDateInput(date)
-  const { year, month, day, hour, minute } = getDateParts(d)
-  return `${year}-${String(month).padStart(2, '0')}-${String(day).padStart(2, '0')} ${String(hour).padStart(2, '0')}:${String(minute).padStart(2, '0')}`
-}
-
 /** Sort articles: pinned first, then by createdAt descending */
 export function sortArticles<
-  T extends { frontmatter: { top?: boolean; createdAt: Date | string } },
+  T extends { slug: string; frontmatter: { top?: boolean; title: string; createdAt: Date | string } },
 >(articles: T[]): T[] {
   return [...articles].sort((a, b) => {
     const topDiff = Number(Boolean(b.frontmatter.top)) - Number(Boolean(a.frontmatter.top))
@@ -80,7 +81,13 @@ export function sortArticles<
 
     const aDate = parseDateInput(a.frontmatter.createdAt)
     const bDate = parseDateInput(b.frontmatter.createdAt)
-    return bDate.getTime() - aDate.getTime()
+    const timeDiff = bDate.getTime() - aDate.getTime()
+    if (timeDiff !== 0) return timeDiff
+
+    const titleDiff = compareLocalizedText(a.frontmatter.title, b.frontmatter.title)
+    if (titleDiff !== 0) return titleDiff
+
+    return compareLocalizedText(a.slug, b.slug)
   })
 }
 

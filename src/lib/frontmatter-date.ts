@@ -1,11 +1,9 @@
-const FRONTMATTER_DATE_TIME = /^(\d{4})-(\d{2})-(\d{2}) (\d{2}):(\d{2})$/
+const FRONTMATTER_DATE = /^(\d{4})-(\d{2})-(\d{2})$/
 
 interface DateParts {
   year: number
   month: number
   day: number
-  hour: number
-  minute: number
 }
 
 function pad2(value: number): string {
@@ -13,75 +11,64 @@ function pad2(value: number): string {
 }
 
 function parseDateParts(value: string): DateParts | null {
-  const match = value.match(FRONTMATTER_DATE_TIME)
+  const match = value.match(FRONTMATTER_DATE)
   if (!match) return null
 
   const year = Number(match[1])
   const month = Number(match[2])
   const day = Number(match[3])
-  const hour = Number(match[4])
-  const minute = Number(match[5])
 
-  if (
-    Number.isNaN(year) ||
-    Number.isNaN(month) ||
-    Number.isNaN(day) ||
-    Number.isNaN(hour) ||
-    Number.isNaN(minute)
-  ) {
+  if (Number.isNaN(year) || Number.isNaN(month) || Number.isNaN(day)) {
     return null
   }
 
-  const utcMs = Date.UTC(year, month - 1, day, hour, minute, 0)
-  const normalized = new Date(utcMs)
-
+  const normalized = new Date(Date.UTC(year, month - 1, day))
   if (
     normalized.getUTCFullYear() !== year ||
     normalized.getUTCMonth() + 1 !== month ||
-    normalized.getUTCDate() !== day ||
-    normalized.getUTCHours() !== hour ||
-    normalized.getUTCMinutes() !== minute
+    normalized.getUTCDate() !== day
   ) {
     return null
   }
 
-  return {
-    year,
-    month,
-    day,
-    hour,
-    minute,
-  }
+  return { year, month, day }
 }
 
-export function isFrontmatterDateTime(value: string): boolean {
-  return parseDateParts(value.trim()) !== null
-}
-
-export function canonicalizeFrontmatterDateTime(value: string): string {
-  const parts = parseDateParts(value.trim())
-  if (!parts) {
-    throw new Error('Invalid frontmatter date: expected "YYYY-MM-DD HH:mm"')
+function parseYamlDate(value: unknown): DateParts | null {
+  if (!(value instanceof Date) || Number.isNaN(value.getTime())) {
+    return null
   }
 
-  return `${parts.year}-${pad2(parts.month)}-${pad2(parts.day)} ${pad2(parts.hour)}:${pad2(parts.minute)}`
-}
-
-export function parseFrontmatterDateTime(value: string): Date {
-  const parts = parseDateParts(value.trim())
-  if (!parts) {
-    throw new Error(`Invalid frontmatter date "${value}": expected "YYYY-MM-DD HH:mm"`)
-  }
-
-  return new Date(Date.UTC(parts.year, parts.month - 1, parts.day, parts.hour, parts.minute, 0))
-}
-
-export function formatDateToFrontmatterDateTime(value: Date): string {
   const year = value.getUTCFullYear()
   const month = value.getUTCMonth() + 1
   const day = value.getUTCDate()
-  const hour = value.getUTCHours()
-  const minute = value.getUTCMinutes()
 
-  return `${year}-${pad2(month)}-${pad2(day)} ${pad2(hour)}:${pad2(minute)}`
+  if (
+    value.getUTCHours() !== 0 ||
+    value.getUTCMinutes() !== 0 ||
+    value.getUTCSeconds() !== 0 ||
+    value.getUTCMilliseconds() !== 0
+  ) {
+    return null
+  }
+
+  return { year, month, day }
+}
+
+export function canonicalizeFrontmatterDate(value: unknown): string {
+  const parts = parseYamlDate(value)
+  if (!parts) {
+    throw new Error('Invalid frontmatter date: expected an unquoted YAML date like 2025-12-21')
+  }
+
+  return `${parts.year}-${pad2(parts.month)}-${pad2(parts.day)}`
+}
+
+export function parseFrontmatterDate(value: string): Date {
+  const parts = parseDateParts(value.trim())
+  if (!parts) {
+    throw new Error(`Invalid frontmatter date "${value}": expected "YYYY-MM-DD"`)
+  }
+
+  return new Date(Date.UTC(parts.year, parts.month - 1, parts.day, 12, 0, 0))
 }
