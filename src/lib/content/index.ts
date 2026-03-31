@@ -3,7 +3,7 @@ export {
   getAllArticles,
   getArticleMeta,
   loadArticle,
-} from './content/articles.js'
+} from './articles.js'
 export {
   getAllJottings,
   getAllPosts,
@@ -12,7 +12,7 @@ export {
   getRecentPosts,
   getSeriesConfig,
   getSeriesList,
-} from './content/series.js'
+} from './series.js'
 export {
   getAllTagItems,
   getAllTags,
@@ -21,4 +21,4 @@ export {
   getTagNameBySlug,
   getTagSlug,
   type TagItem,
-} from './content/tags.js'
+} from './tags.js'
