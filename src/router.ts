@@ -6,7 +6,9 @@ import TagsPage from '~/pages/functional/TagsPage.vue'
 import NotFoundPage from '~/pages/functional/NotFoundPage.vue'
 import SeriesListPage from '~/pages/content/SeriesListPage.vue'
 import SeriesPage from '~/pages/content/SeriesPage.vue'
-import ArticlePage from '~/pages/content/ArticlePage.vue'
+import ArticleLeftView from '~/pages/content/article/ArticleLeftView.vue'
+import ArticleMainView from '~/pages/content/article/ArticleMainView.vue'
+import ArticleRightView from '~/pages/content/article/ArticleRightView.vue'
 import { getTagNameBySlug } from '~/lib/content'
 import { articles, seriesMetadata } from 'virtual:content'
 
@@ -58,7 +60,11 @@ export const routes: RouteRecordRaw[] = [
 
   {
     path: `/:series(${docSeriesPattern})/:slug`,
-    component: ArticlePage,
+    components: {
+      left: ArticleLeftView,
+      default: ArticleMainView,
+      right: ArticleRightView,
+    },
     beforeEnter: ensureDocExists,
   },
 

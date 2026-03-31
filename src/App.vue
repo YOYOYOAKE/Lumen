@@ -49,6 +49,14 @@ function getRouteTransitionKey(route: RouteLocationNormalizedLoaded): string {
   if (hasArticleSlug && series) return `article:${series}`
   return route.path
 }
+
+function getNamedViewTransitionKey(
+  route: RouteLocationNormalizedLoaded,
+  viewName: 'left' | 'default' | 'right',
+): string {
+  const baseKey = getRouteTransitionKey(route)
+  return `${viewName}:${baseKey}`
+}
 </script>
 
 <template>
@@ -57,9 +65,31 @@ function getRouteTransitionKey(route: RouteLocationNormalizedLoaded): string {
     <AppDivider />
     <div class="grow flex">
       <main class="relative border-x border-border/50 global-layout-width mx-auto grow min-w-0">
+        <router-view name="left" v-slot="{ Component, route }">
+          <component
+            :is="Component"
+            v-if="Component"
+            :key="getNamedViewTransitionKey(route, 'left')"
+          />
+        </router-view>
+
         <router-view v-slot="{ Component, route }">
           <transition name="fade" mode="out-in">
-            <component :is="Component" :key="getRouteTransitionKey(route)" />
+            <component
+              :is="Component"
+              v-if="Component"
+              :key="getNamedViewTransitionKey(route, 'default')"
+            />
+          </transition>
+        </router-view>
+
+        <router-view name="right" v-slot="{ Component, route }">
+          <transition name="fade" mode="out-in">
+            <component
+              :is="Component"
+              v-if="Component"
+              :key="getNamedViewTransitionKey(route, 'right')"
+            />
           </transition>
         </router-view>
       </main>
