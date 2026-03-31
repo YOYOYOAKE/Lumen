@@ -1,6 +1,7 @@
 import { ViteSSG } from 'vite-ssg'
 import { routes } from './router'
 import App from './App.vue'
+import { getAllArticles, getAllTagItems } from './lib/content'
 import './styles/global.css'
 import './styles/markdown.css'
 
@@ -14,3 +15,11 @@ export const createApp = ViteSSG(App, { routes }, ({ app: _app, router, isClient
     })
   }
 })
+
+export async function includedRoutes(paths: string[]): Promise<string[]> {
+  const staticPaths = paths.filter((path) => !path.includes(':'))
+  const articlePaths = getAllArticles().map((article) => `/${article.series}/${article.slug}`)
+  const tagPaths = getAllTagItems().map((tag) => `/tags/${tag.slug}`)
+
+  return Array.from(new Set([...staticPaths, ...articlePaths, ...tagPaths]))
+}
