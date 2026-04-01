@@ -1,6 +1,7 @@
 <script setup lang="ts">
 import { onMounted, onUnmounted, ref } from 'vue'
 import mediumZoom from 'medium-zoom/dist/pure'
+import '~/styles/markdown.css'
 
 defineProps<{ html: string }>()
 

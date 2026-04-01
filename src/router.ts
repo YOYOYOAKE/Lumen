@@ -1,9 +1,6 @@
 import type { RouteLocationNormalized, RouteRecordRaw } from 'vue-router'
 
 import NotFoundPage from '~/pages/functional/NotFoundPage.vue'
-import ArticleLeftView from '~/pages/content/article/ArticleLeftView.vue'
-import ArticleMainView from '~/pages/content/article/ArticleMainView.vue'
-import ArticleRightView from '~/pages/content/article/ArticleRightView.vue'
 import HomeHeaderView from '~/pages/standard/HomeHeaderView.vue'
 import HomeBodyView from '~/pages/standard/HomeBodyView.vue'
 import StaticListHeaderView from '~/pages/standard/StaticListHeaderView.vue'
@@ -15,6 +12,10 @@ import SeriesPageBodyView from '~/pages/standard/SeriesPageBodyView.vue'
 import { getTagNameBySlug } from '~/lib/content'
 import { pagesConfig } from '~/config'
 import { articles, seriesMetadata } from 'virtual:content'
+
+const ArticleLeftView = () => import('~/pages/content/article/ArticleLeftView.vue')
+const ArticleMainView = () => import('~/pages/content/article/ArticleMainView.vue')
+const ArticleRightView = () => import('~/pages/content/article/ArticleRightView.vue')
 
 const docSeriesPattern = (() => {
   const directories = seriesMetadata.map((item) => item.directory)

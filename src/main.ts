@@ -3,7 +3,6 @@ import { routes } from './router'
 import App from './App.vue'
 import { getAllArticles, getAllTagItems } from './lib/content'
 import './styles/global.css'
-import './styles/markdown.css'
 
 export const createApp = ViteSSG(App, { routes }, ({ app: _app, router, isClient }) => {
   // Scroll to top on navigation
