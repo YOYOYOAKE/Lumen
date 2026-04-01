@@ -1,5 +1,7 @@
 <script setup lang="ts">
 import { computed } from 'vue'
+import type { RouteLocationRaw } from 'vue-router'
+import { buildArticleRoute } from '~/lib/content'
 import TocHead from '~/components/article/toc/TocHead.vue'
 import TocMenu from '~/components/article/toc/TocMenu.vue'
 import type { TocNavSection } from '~/components/article/toc/types'
@@ -19,6 +21,7 @@ const props = defineProps<{
   currentSlug: string
   entries: SiblingEntry[]
   baseUrl: string
+  tagSlug?: string | null
   subSeries?: SubSeries[]
 }>()
 
@@ -50,8 +53,8 @@ const groupedEntries = computed(() => {
   return resolved
 })
 
-function toArticleLink(slug: string): string {
-  return `${props.baseUrl.replace(/\/$/, '')}/${slug}`
+function toArticleLink(slug: string): RouteLocationRaw {
+  return buildArticleRoute(props.baseUrl, slug, props.tagSlug)
 }
 
 const groupedSections = computed<TocNavSection[]>(() => {

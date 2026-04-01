@@ -1,8 +1,11 @@
 <script setup lang="ts">
+import { buildArticleRoute } from '~/lib/content'
+
 defineProps<{
   prev: { slug: string; title: string } | null
   next: { slug: string; title: string } | null
   baseUrl: string
+  tagSlug?: string | null
 }>()
 </script>
 
@@ -13,7 +16,7 @@ defineProps<{
       <div class="flex-1">
         <router-link
           v-if="prev"
-          :to="`${baseUrl}/${prev.slug}`"
+          :to="buildArticleRoute(baseUrl, prev.slug, tagSlug)"
           class="group flex-1 relative block"
         >
           <div
@@ -44,7 +47,7 @@ defineProps<{
       <div class="flex-1 text-right">
         <router-link
           v-if="next"
-          :to="`${baseUrl}/${next.slug}`"
+          :to="buildArticleRoute(baseUrl, next.slug, tagSlug)"
           class="group flex-1 relative block"
         >
           <div

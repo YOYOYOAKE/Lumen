@@ -1,5 +1,5 @@
 <script setup lang="ts">
-import { getTagSlug } from '~/lib/content'
+import { buildArticleRoute, getTagSlug } from '~/lib/content'
 import { cn, formatDate, parseDateInput } from '~/lib/utils'
 import type { ResolvedArticleMeta } from '~/types'
 
@@ -7,6 +7,7 @@ defineProps<{
   post: ResolvedArticleMeta
   index: number
   baseUrl?: string
+  tagSlug?: string
 }>()
 
 const topText = 'TOP'
@@ -39,7 +40,7 @@ const recommendBadge =
       </div>
 
       <!-- Title & Description -->
-      <router-link :to="`${baseUrl ?? '/posts'}/${post.slug}`" class="block">
+      <router-link :to="buildArticleRoute(baseUrl ?? '/posts', post.slug, tagSlug)" class="block">
         <div
           class="text-base font-semibold text-foreground leading-tight group-hover:text-primary transition-colors line-clamp-2"
         >

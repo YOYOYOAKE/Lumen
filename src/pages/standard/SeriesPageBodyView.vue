@@ -6,7 +6,7 @@ import {
 } from '~/pages/standard/useSeriesStandardPage'
 
 const props = defineProps<SeriesStandardPageProps>()
-const { posts, baseUrl } = useSeriesStandardPage(props)
+const { posts, baseUrl, tagSlug } = useSeriesStandardPage(props)
 </script>
 
 <template>
@@ -17,6 +17,7 @@ const { posts, baseUrl } = useSeriesStandardPage(props)
       :post="post"
       :index="i"
       :base-url="baseUrl"
+      :tag-slug="tagSlug"
     />
   </div>
 </template>

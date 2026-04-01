@@ -1,9 +1,9 @@
 import { computed } from 'vue'
 import {
-  getArticlesBySeries,
-  getPostsByTagSlug,
   getSeriesConfig,
   getTagNameBySlug,
+  resolveSeriesPagePosts,
+  resolveTagPagePosts,
 } from '~/lib/content'
 
 export type SeriesStandardPageProps =
@@ -14,7 +14,7 @@ export function useSeriesStandardPage(props: SeriesStandardPageProps) {
   const tagName = computed(() => (props.kind === 'tag' ? getTagNameBySlug(props.tagSlug) : null))
 
   const posts = computed(() =>
-    props.kind === 'tag' ? getPostsByTagSlug(props.tagSlug) : getArticlesBySeries(props.series),
+    props.kind === 'tag' ? resolveTagPagePosts(props.tagSlug) : resolveSeriesPagePosts(props.series),
   )
 
   const title = computed(() => {
@@ -37,5 +37,6 @@ export function useSeriesStandardPage(props: SeriesStandardPageProps) {
     title,
     description,
     baseUrl,
+    tagSlug: props.kind === 'tag' ? props.tagSlug : undefined,
   }
 }

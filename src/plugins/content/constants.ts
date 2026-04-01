@@ -10,12 +10,8 @@ export const SERIES_CONFIG_PATH = join(process.cwd(), 'src', 'config', 'series.t
 export const SERIES_FILE = 'series.md'
 
 export const SERIES_ORDERS: Set<SeriesOrder> = new Set([
-  'time-asc',
   'time-desc',
-  'filename-asc',
-  'filename-desc',
   'title-asc',
-  'title-desc',
 ])
 
 export const SERIES_ITEM_KEYS = new Set([

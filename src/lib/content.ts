@@ -9,7 +9,6 @@ export {
   getAllPosts,
   getArticlesBySeries,
   getPinnedPosts,
-  getRecentPosts,
   getSeriesConfig,
   getSeriesList,
 } from './content/series.js'
@@ -22,3 +21,12 @@ export {
   getTagSlug,
   type TagItem,
 } from './content/tags.js'
+export {
+  buildArticleRoute,
+  resolveArticleSidebarContextList,
+  resolveRecentPosts,
+  resolveSeriesPagePosts,
+  resolveSortedSeriesList,
+  resolveSortedTags,
+  resolveTagPagePosts,
+} from './content/view-ordering.js'

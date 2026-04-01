@@ -103,13 +103,7 @@ export interface FriendsPageConfig {
 }
 
 /** Configuration for a single series */
-export type SeriesOrder =
-  | 'time-asc'
-  | 'time-desc'
-  | 'filename-asc'
-  | 'filename-desc'
-  | 'title-asc'
-  | 'title-desc'
+export type SeriesOrder = 'time-desc' | 'title-asc'
 
 /** Optional sub-series mapping used for grouped menu display */
 export interface SubSeriesConfig {

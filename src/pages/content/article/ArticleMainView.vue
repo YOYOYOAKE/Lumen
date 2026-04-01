@@ -17,6 +17,7 @@ const {
   fallbackTitle,
   isLoading,
   metaDoc,
+  navigationTagSlug,
   nextNav,
   prevNav,
 } = useArticleRouteState({ includeDocument: true })
@@ -46,7 +47,12 @@ useHead(() => ({
             </div>
           </article>
 
-          <ArticleNav :prev="prevNav" :next="nextNav" :base-url="baseUrl" />
+          <ArticleNav
+            :prev="prevNav"
+            :next="nextNav"
+            :base-url="baseUrl"
+            :tag-slug="navigationTagSlug"
+          />
         </template>
 
         <ArticleMainSkeleton v-else-if="isLoading" />

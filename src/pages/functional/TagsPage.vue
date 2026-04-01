@@ -1,16 +1,13 @@
 <script setup lang="ts">
-import { computed } from 'vue'
 import { useHead } from '@unhead/vue'
-import { getAllPosts, getAllTagItems } from '~/lib/content'
+import { getAllPosts, resolveSortedTags } from '~/lib/content'
 import { pagesConfig } from '~/config'
 import ListPageLayout from '~/components/list/ListPageLayout.vue'
 import TagCloud from '~/components/list/TagCloud.vue'
 
 const config = pagesConfig.tags
-const tags = computed(() =>
-  [...getAllTagItems()].sort((a, b) => b.count - a.count || a.name.localeCompare(b.name, 'zh-CN')),
-)
-const totalPosts = computed(() => getAllPosts().length)
+const tags = resolveSortedTags()
+const totalPosts = getAllPosts().length
 
 useHead({
   title: config.title,

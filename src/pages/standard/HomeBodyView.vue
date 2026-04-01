@@ -1,11 +1,11 @@
 <script setup lang="ts">
 import { pagesConfig } from '~/config'
-import { getRecentPosts } from '~/lib/content'
+import { resolveRecentPosts } from '~/lib/content'
 import SkillsMarquee from '~/components/home/SkillsMarquee.vue'
 import RecentPosts from '~/components/home/RecentPosts.vue'
 
 const home = pagesConfig.home
-const recentPosts = getRecentPosts(home.recentPosts.count)
+const recentPosts = resolveRecentPosts(home.recentPosts.count)
 </script>
 
 <template>

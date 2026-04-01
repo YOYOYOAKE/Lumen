@@ -1,7 +1,6 @@
 import { readFileSync } from 'node:fs'
 import { join } from 'node:path'
 import matter from 'gray-matter'
-import { parseFrontmatterDate } from '../../lib/frontmatter-date.js'
 import type { ProcessedMarkdown } from '../../lib/markdown.js'
 import { compareLocalizedText } from '../../lib/utils.js'
 import type { ResolvedArticleBody, ResolvedArticleMeta } from '../../types/content.js'
@@ -121,18 +120,10 @@ export async function buildContentPayload(contentDir: string): Promise<BuiltCont
     seriesMetadata.push(resolvedConfig)
   }
 
-  // Sort: pinned first, then by createdAt descending.
+  // Keep virtual:content article order stable and neutral.
   articles.sort((a, b) => {
-    const topDiff = Number(Boolean(b.frontmatter.top)) - Number(Boolean(a.frontmatter.top))
-    if (topDiff !== 0) return topDiff
-
-    const timeDiff =
-      parseFrontmatterDate(b.frontmatter.createdAt).getTime() -
-      parseFrontmatterDate(a.frontmatter.createdAt).getTime()
-    if (timeDiff !== 0) return timeDiff
-
-    const titleDiff = compareLocalizedText(a.frontmatter.title, b.frontmatter.title)
-    if (titleDiff !== 0) return titleDiff
+    const seriesDiff = compareLocalizedText(a.series, b.series)
+    if (seriesDiff !== 0) return seriesDiff
 
     return compareLocalizedText(a.slug, b.slug)
   })

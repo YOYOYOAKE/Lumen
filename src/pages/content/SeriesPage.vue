@@ -2,10 +2,10 @@
 import { computed } from 'vue'
 import { useHead } from '@unhead/vue'
 import {
-  getArticlesBySeries,
-  getPostsByTagSlug,
   getSeriesConfig,
   getTagNameBySlug,
+  resolveSeriesPagePosts,
+  resolveTagPagePosts,
 } from '~/lib/content'
 import ListPageLayout from '~/components/list/ListPageLayout.vue'
 import PostListItem from '~/components/list/PostListItem.vue'
@@ -16,7 +16,7 @@ const props = defineProps<SeriesPageProps>()
 const tagName = computed(() => (props.kind === 'tag' ? getTagNameBySlug(props.tagSlug) : null))
 
 const posts = computed(() =>
-  props.kind === 'tag' ? getPostsByTagSlug(props.tagSlug) : getArticlesBySeries(props.series),
+  props.kind === 'tag' ? resolveTagPagePosts(props.tagSlug) : resolveSeriesPagePosts(props.series),
 )
 
 const title = computed(() => {
@@ -53,6 +53,7 @@ useHead(() => ({
         :post="post"
         :index="i"
         :base-url="baseUrl"
+        :tag-slug="props.kind === 'tag' ? props.tagSlug : undefined"
       />
     </div>
   </ListPageLayout>

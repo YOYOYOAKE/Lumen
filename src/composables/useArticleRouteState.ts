@@ -3,9 +3,9 @@ import { useRoute } from 'vue-router'
 import {
   getAdjacentArticles,
   getArticleMeta,
-  getArticlesBySeries,
   getSeriesConfig,
   loadArticle,
+  resolveArticleSidebarContextList,
 } from '~/lib/content'
 import type { ResolvedArticle } from '~/types'
 
@@ -85,8 +85,17 @@ export function useArticleRouteState(options: UseArticleRouteStateOptions = {}) 
   const articleSlug = computed(() => String(route.params.slug ?? ''))
   const articleTransitionKey = computed(() => `${series.value}:${articleSlug.value}`)
 
-  const seriesArticles = computed(() => getArticlesBySeries(series.value))
   const metaDoc = computed(() => getArticleMeta(series.value, articleSlug.value))
+  const requestedTagSlug = computed(() => {
+    const value = route.query.tag
+    if (Array.isArray(value)) return String(value[0] ?? '').trim() || null
+    return typeof value === 'string' ? value.trim() || null : null
+  })
+  const articleContext = computed(() =>
+    resolveArticleSidebarContextList(series.value, metaDoc.value, requestedTagSlug.value),
+  )
+  const seriesArticles = computed(() => articleContext.value.articles)
+  const navigationTagSlug = computed(() => articleContext.value.tagSlug)
   const docStore = computed(() => getArticleDocStore(series.value, articleSlug.value))
   const doc = computed(() => docStore.value.doc.value)
   const isLoading = computed(() => (includeDocument ? docStore.value.isLoading.value : false))
@@ -155,6 +164,7 @@ export function useArticleRouteState(options: UseArticleRouteStateOptions = {}) 
     articleSlug,
     articleTransitionKey,
     seriesArticles,
+    navigationTagSlug,
     metaDoc,
     doc,
     isLoading,

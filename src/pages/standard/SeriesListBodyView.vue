@@ -1,11 +1,11 @@
 <script setup lang="ts">
-import { getSeriesList, getArticlesBySeries } from '~/lib/content'
+import { resolveSeriesPagePosts, resolveSortedSeriesList } from '~/lib/content'
 import ItemCard from '~/components/list/ItemCard.vue'
 
-const seriesList = getSeriesList()
+const seriesList = resolveSortedSeriesList()
 
 const items = seriesList.map((series) => {
-  const first = getArticlesBySeries(series.id)[0]
+  const first = resolveSeriesPagePosts(series.id)[0]
   return {
     name: series.name,
     description: series.description,
