@@ -5,6 +5,7 @@ node_modules/
 # Build output
 dist/
 dist-ssr/
+public/fonts/lxgw-wenkai/
 
 # Test output
 coverage/

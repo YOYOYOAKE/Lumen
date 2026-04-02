@@ -10,7 +10,10 @@
   "type": "module",
   "scripts": {
     "preinstall": "node -e \"const ua=process.env.npm_config_user_agent||'';if(!ua.startsWith('pnpm/')){console.error('This project requires pnpm. Please run: pnpm install');process.exit(1)}\"",
+    "fonts:build": "node scripts/build-fonts.mjs",
+    "predev": "pnpm fonts:build",
     "dev": "vite",
+    "prebuild": "pnpm fonts:build",
     "build": "vite-ssg build",
     "preview": "vite preview",
     "typecheck": "vue-tsc --noEmit",

@@ -33,11 +33,7 @@ useHead({
     },
     {
       rel: 'stylesheet',
-      href: 'https://cdn.jsdelivr.net/npm/lxgw-wenkai-webfont@1.7.0/style.css',
-    },
-    {
-      rel: 'stylesheet',
-      href: 'https://cdn.jsdelivr.net/npm/lxgw-wenkai-mono-webfont@1.7.0/style.css',
+      href: '/fonts/lxgw-wenkai/fonts.css',
     },
   ],
 })

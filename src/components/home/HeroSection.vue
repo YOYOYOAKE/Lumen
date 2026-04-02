@@ -15,7 +15,7 @@ defineProps<{
     <h1 class="flex flex-col gap-2">
       <span class="text-4xl sm:text-5xl tracking-tight">{{ title }}</span>
       <span
-        class="text-muted-foreground font-light text-xl sm:text-2xl block tracking-wide text-balance"
+        class="text-muted-foreground font-normal text-xl sm:text-2xl block tracking-wide text-balance"
       >
         {{ subtitle }}
       </span>
