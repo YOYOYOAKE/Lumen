@@ -107,7 +107,7 @@ const appSceneTransitionProps = computed(() =>
         </transition>
       </main>
     </div>
-    <AppDivider />
+    <AppDivider class="app-bottom-divider" />
     <AppFooter />
   </div>
 </template>

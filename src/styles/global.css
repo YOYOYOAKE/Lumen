@@ -365,15 +365,16 @@
 
 .article-scene-pane {
   --scene-pane-x: 0px;
-  transform: translate3d(var(--scene-pane-x), 0, 0);
 }
 
 .article-scene-pane-left {
   --scene-pane-x: -100%;
+  transform: translate3d(var(--scene-pane-x), 0, 0);
 }
 
 .article-scene-pane-right {
   --scene-pane-x: 100%;
+  transform: translate3d(var(--scene-pane-x), 0, 0);
 }
 
 .article-scene-enter-active .article-scene-pane {
