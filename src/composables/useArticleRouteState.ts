@@ -7,6 +7,7 @@ import {
   loadArticle,
   resolveArticleSidebarContextList,
 } from '~/lib/content'
+import { articleBodyCache, toLookupKey } from '~/lib/content/store'
 import type { ResolvedArticle } from '~/types'
 
 interface UseArticleRouteStateOptions {
@@ -20,11 +21,12 @@ interface ArticleDocStore {
   requestId: number
 }
 
-const articleDocStores = new Map<string, ArticleDocStore>()
-
-function toLookupKey(series: string, slug: string): string {
-  return `${series}:${slug}`
+export interface InitialArticleState {
+  lookupKey: string
+  doc: ResolvedArticle
 }
+
+const articleDocStores = new Map<string, ArticleDocStore>()
 
 function getArticleDocStore(series: string, slug: string): ArticleDocStore {
   const key = toLookupKey(series, slug)
@@ -39,6 +41,36 @@ function getArticleDocStore(series: string, slug: string): ArticleDocStore {
   }
   articleDocStores.set(key, store)
   return store
+}
+
+export function getInitialArticleState(series: string, slug: string): InitialArticleState | null {
+  if (!series || !slug) return null
+
+  const lookupKey = toLookupKey(series, slug)
+  const doc = articleDocStores.get(lookupKey)?.doc.value
+  if (!doc) return null
+
+  return {
+    lookupKey,
+    doc,
+  }
+}
+
+export function hydrateInitialArticleState(state: InitialArticleState | null | undefined): void {
+  if (!state) return
+
+  const { doc } = state
+  const lookupKey = state.lookupKey || toLookupKey(doc.series, doc.slug)
+  const store = getArticleDocStore(doc.series, doc.slug)
+
+  articleBodyCache.set(lookupKey, {
+    html: doc.html,
+    headings: doc.headings,
+  })
+
+  store.doc.value = doc
+  store.isLoading.value = false
+  store.inflight = null
 }
 
 async function ensureArticleDoc(
