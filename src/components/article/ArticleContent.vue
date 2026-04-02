@@ -9,27 +9,19 @@ const rootEl = ref<HTMLElement | null>(null)
 let zoom: ReturnType<typeof mediumZoom> | null = null
 
 async function copyTextToClipboard(text: string): Promise<boolean> {
+  if (typeof navigator.clipboard?.writeText !== 'function') {
+    return false
+  }
+
   try {
     await navigator.clipboard.writeText(text)
     return true
   } catch {
-    const textarea = document.createElement('textarea')
-    textarea.value = text
-    textarea.setAttribute('readonly', 'true')
-    textarea.style.position = 'fixed'
-    textarea.style.opacity = '0'
-    document.body.appendChild(textarea)
-    textarea.select()
-
-    try {
-      return document.execCommand('copy')
-    } finally {
-      document.body.removeChild(textarea)
-    }
+    return false
   }
 }
 
-function setCopyButtonState(button: HTMLButtonElement, title: string, state: 'copied' | 'error' | null) {
+function setCopyButtonState(button: HTMLButtonElement, title: string, state: 'copied' | null) {
   button.title = title
   button.setAttribute('aria-label', title)
 
@@ -60,7 +52,9 @@ async function handleMarkdownClick(event: MouseEvent) {
   if (!text) return
 
   const copied = await copyTextToClipboard(text)
-  setCopyButtonState(button, copied ? 'Copied' : 'Copy failed', copied ? 'copied' : 'error')
+  if (!copied) return
+
+  setCopyButtonState(button, 'Copied', 'copied')
 }
 
 onMounted(() => {

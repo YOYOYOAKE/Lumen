@@ -367,10 +367,6 @@
     color: light-dark(#4c4f69, #fff);
   }
 
-  &[data-state='error'] {
-    opacity: 1;
-    color: light-dark(#d20f39, #ed8796);
-  }
 }
 
 .code-block-copy-icon {
