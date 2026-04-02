@@ -91,8 +91,7 @@ export function rehypeExtractHeadings(headings: TocHeading[]) {
         text += textNode.value
       })
 
-      // Clean up heading text (remove trailing h1/h2/etc markers)
-      text = text.replace(/\s*[Hh][1-6]$/g, '').trim()
+      text = text.trim()
       if (text) {
         headings.push({ depth, slug, text })
       }

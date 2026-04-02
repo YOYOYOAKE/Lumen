@@ -6,25 +6,13 @@ import TocHead from '~/components/article/toc/TocHead.vue'
 import TocMenu from '~/components/article/toc/TocMenu.vue'
 import type { TocNavSection } from '~/components/article/toc/types'
 
-type TocDisplayItem = TocHeading & {
-  text: string
-}
-
 const props = defineProps<{ headings: TocHeading[] }>()
 
 const { activeId } = useScrollSpy()
 
-const filteredHeadings = computed<TocDisplayItem[]>(() => {
-  return props.headings
-    .filter((h) => h.depth <= 4 && h.text.trim() && h.slug !== 'footnote-label')
-    .map((h) => {
-      const cleaned = h.text.replace(/\s*[Hh][1-6]$/g, '').trim()
-      return {
-        ...h,
-        text: cleaned,
-      }
-    })
-})
+const filteredHeadings = computed(() =>
+  props.headings.filter((h) => h.depth <= 4 && h.text.trim() && h.slug !== 'footnote-label'),
+)
 
 const minDepth = computed(() =>
   filteredHeadings.value.length > 0 ? Math.min(...filteredHeadings.value.map((h) => h.depth)) : 2,
