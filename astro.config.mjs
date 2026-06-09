@@ -16,6 +16,7 @@ import { fileURLToPath } from 'node:url'
 import { dirname, resolve } from 'node:path'
 import { DANGER_CALLOUT_ICON, sanitizeSchema } from './src/lib/markdown-constants.mjs'
 import {
+  rehypeAddExternalLinkFavicons,
   rehypeRepairSanitizedHashLinks,
   remarkAssertSupportedCallouts,
 } from './src/lib/markdown-plugins.mjs'
@@ -43,10 +44,6 @@ export default defineConfig({
         remarkDirectiveSugar,
         {
           badge: { presets: { n: { text: 'NEW' } } },
-          link: {
-            faviconSourceUrl: 'https://www.google.com/s2/favicons?domain={domain}&sz=128',
-            imgProps: () => ({ 'aria-hidden': 'true' }),
-          },
           image: { stripParagraph: false },
           video: {
             platforms: {
@@ -62,6 +59,7 @@ export default defineConfig({
       [rehypeSanitize, sanitizeSchema],
       rehypeRepairSanitizedHashLinks,
       rehypeSlug,
+      rehypeAddExternalLinkFavicons,
       rehypeUnwrapImages,
       [
         rehypeCallouts,

@@ -825,6 +825,7 @@ image-figure-polaroid {
     [data-link='github-acct'],
     [data-link='github-repo'],
     [data-link='custom-url'],
+    [data-link='external-url'],
     [data-link='npm-pkg']
   )
   > img {
